@@ -15,7 +15,10 @@ import {
   setDoc,
 } from "firebase/firestore";
 import moment from "moment";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+const ReactQuill = dynamic(() => import("react-quill"), {
+  ssr: false,
+  loading: () => <p>Loading ...</p>,
+});
 import "react-quill/dist/quill.snow.css";
 
 const modules = {
@@ -34,11 +37,15 @@ const modules = {
 };
 
 const EditJobId = () => {
+  const currentTime = new Date().toLocaleString("en-Us", {
+    timeZone: "Asia/Kolkata",
+  });
   const router = useRouter();
   const { jobID } = router.query;
   const { currentUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
+  const [editorValue, setEditorValue] = useState("")
   const [newJob, setNewJob] = useState({
     company_name: "",
     company_url: "",
@@ -53,42 +60,50 @@ const EditJobId = () => {
     tags: "",
   });
 
-  const fetchDocument = useCallback(async () => {
+  const fetchDocument = async () => {
     setIsLoading(true);
 
-    const q = query(collection(firestore, "users"));
-    const snapshot = await getDocs(q);
-    const data = snapshot.docs.map((doc) => ({
-      ...doc.data(),
-      id: doc.id,
-    }));
-    data.map(async (elem) => {
-      const workQ = query(collection(firestore, `users/${elem.id}/jobs`));
-      const workDetails = await getDocs(workQ);
-      const workInfo = workDetails.docs.map((doc) => ({
+    try {
+      const q = query(
+        collection(firestore, "users"),
+        where("uid", "==", currentUser?.uid)
+      );
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      let j_details = workInfo?.filter((job) => job?.id === jobID[0]);
-      //console.log(j_details[0]);
+      data.map(async (elem) => {
+        const workQ = query(collection(firestore, `users/${elem.id}/jobs`));
+        const workDetails = await getDocs(workQ);
+        const workInfo = workDetails.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        let j_details = workInfo?.filter((job) => job?.id === jobID[0]);
 
-      setNewJob({
-        company_name: j_details[0]?.company_name,
-        company_url: j_details[0]?.company_url,
-        role: j_details[0]?.role,
-        apply_link: j_details[0]?.apply_link,
-        experience: j_details[0]?.experience,
-        location: j_details[0]?.location,
-        date_posted: j_details[0]?.date_posted,
-        job_type: j_details[0]?.job_type,
-        onsite_remote: j_details[0]?.onsite_remote,
-        description: j_details[0]?.description,
-        tags: j_details[0]?.tags,
+        setNewJob({
+          company_name: j_details[0]?.company_name,
+          company_url: j_details[0]?.company_url,
+          role: j_details[0]?.role,
+          apply_link: j_details[0]?.apply_link,
+          experience: j_details[0]?.experience,
+          location: j_details[0]?.location,
+          date_posted: j_details[0]?.date_posted,
+          job_type: j_details[0]?.job_type,
+          onsite_remote: j_details[0]?.onsite_remote,
+          //description: j_details[0]?.description,
+          tags: j_details[0]?.tags,
+        });
+        setEditorValue(j_details[0]?.description)
       });
-    });
+    } catch (error) {
+      console.log(error.messgae);
+      notifyError(`${error.messgae}`);
+    }
 
     setIsLoading(false);
-  }, []);
+  };
 
   useEffect(() => {
     fetchDocument();
@@ -145,9 +160,10 @@ const EditJobId = () => {
         date_posted: newJob?.date_posted,
         job_type: newJob?.job_type,
         onsite_remote: newJob?.onsite_remote,
-        description: newJob?.description,
+        //description: newJob?.description,
+        description:editorValue,
         tags: newJob?.tags,
-        updatedAt: moment(new Date()).format("MMMM Do YYYY, h:mm:ss a"),
+        updatedAt: currentTime,
       });
     } catch (error) {
       console.log(error.messgae);
@@ -157,13 +173,6 @@ const EditJobId = () => {
     setIsUpdate(false);
     notifySuccess("Job updated successfully.");
     router.push("/jobs-posted");
-  };
-
-  const onEditorStateChange = (value) => {
-    setNewJob({
-      ...newJob,
-      description: value,
-    });
   };
 
   if (isLoading) {
@@ -421,8 +430,9 @@ const EditJobId = () => {
                         <ReactQuill
                           theme="snow"
                           placeholder={"Write description here..."}
-                          value={newJob?.description || ""}
-                          onEditorStateChange={onEditorStateChange}
+                          //value={newJob?.description || ""}
+                          value={editorValue}
+                          onChange={(value)=>setEditorValue(value)}
                           modules={modules}
                         />
                       </div>
@@ -504,6 +514,3 @@ const EditJobId = () => {
 };
 
 export default EditJobId;
-
-
-

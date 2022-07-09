@@ -25,7 +25,6 @@ const modules = {
   toolbar: [
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
     [{ font: [] }],
-    [{ size: [] }],
     ["bold", "italic", "underline", "strike"],
     [{ color: [] }, { background: [] }],
     [{ script: "sub" }, { script: "super" }],
@@ -38,6 +37,9 @@ const modules = {
 };
 
 const PostaJob = () => {
+  const currentTime = new Date().toLocaleString("en-Us", {
+    timeZone: "Asia/Kolkata",
+  });
   const router = useRouter();
   const { currentUser } = useAuth();
   const [isUpdate, setIsUpdate] = useState(false);
@@ -107,8 +109,8 @@ const PostaJob = () => {
         description: newJob?.description,
         tags: newJob?.tags,
         posted_by: currentUser?.email?.split("@")[0],
-        createdAt: moment(new Date()).format("MMMM Do YYYY, h:mm:ss a"),
-        updatedAt: moment(new Date()).format("MMMM Do YYYY, h:mm:ss a"),
+        createdAt: currentTime,
+        updatedAt: currentTime,
       });
     });
 

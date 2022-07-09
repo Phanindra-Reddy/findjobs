@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "../../../hooks/AuthContext";
 import { firestore } from "../../../utils/firebase";
-import { collection, query, getDocs } from "firebase/firestore";
+import { collection, query, getDocs,where } from "firebase/firestore";
 import Link from "next/link";
 import ReactHtmlParser from "react-html-parser";
 import { BiLinkExternal } from "react-icons/bi";
+import { notifyError } from "../../../utils/toasters";
 
 const ViewJobId = () => {
   const { currentUser } = useAuth();
@@ -15,31 +16,36 @@ const ViewJobId = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filteredJob, setFilteredJob] = useState([]);
 
-  const fetchDocument = useCallback(async () => {
+  const fetchDocument = async () => {
     setIsLoading(true);
 
-    const q = query(collection(firestore, "users"));
-    const snapshot = await getDocs(q);
-    const data = snapshot.docs.map((doc) => ({
-      ...doc.data(),
-      id: doc.id,
-    }));
-    data.map(async (elem) => {
-      const workQ = query(collection(firestore, `users/${elem.id}/jobs`));
-      const workDetails = await getDocs(workQ);
-      const workInfo = workDetails.docs.map((doc) => ({
+    try {
+      const q = query(collection(firestore, "users"),where("uid","==",currentUser?.uid));
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      setFilteredJob(workInfo);
-    });
+      data.map(async (elem) => {
+        const workQ = query(collection(firestore, `users/${elem.id}/jobs`));
+        const workDetails = await getDocs(workQ);
+        const workInfo = workDetails.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setFilteredJob(workInfo);
+      });
+    } catch (error) {
+      console.log(error.message);
+      notifyError(`${error.message}`);
+    }
 
     setIsLoading(false);
-  }, []);
+  };
 
   useEffect(() => {
     fetchDocument();
-  }, [fetchDocument]);
+  }, []);
 
   if (isLoading) {
     return (
@@ -51,9 +57,8 @@ const ViewJobId = () => {
     );
   }
 
-
   return (
-    <div className="h-full bg-slate-200 p-2 md:px-20 md:py-10">
+    <div className="min-h-screen bg-slate-200 p-2 md:px-20 md:py-10">
       {filteredJob
         ?.filter((job) => job?.id === jobID[0])
         ?.map((job) => (

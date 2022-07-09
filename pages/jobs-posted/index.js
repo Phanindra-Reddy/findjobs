@@ -126,9 +126,7 @@ const JobsPosted = () => {
                         <p className="text-green-700 font-semibold">
                           {job?.date_posted &&
                             `Job Posted on: ` +
-                              moment(`${job?.date_posted}`).format(
-                                "MM-DD-YYYY"
-                              )}
+                            `${job?.date_posted}`}
                           <small className="font-normal text-black">
                             (On Company site)
                           </small>
