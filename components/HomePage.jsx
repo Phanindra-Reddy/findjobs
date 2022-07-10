@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import SearchAJob from "./SearchAJob";
 
 const HomePage = () => {
+  const [searchParams, setSearchParams] = useState({
+    role: "",
+    company:"",
+    location: "",
+  });
   return (
     <>
       <div className="homePageBgImg">
@@ -35,7 +40,10 @@ const HomePage = () => {
           />
         </div>
         <div className="my-16">
-          <SearchAJob />
+          <SearchAJob
+            searchParams={searchParams}
+            setSearchParams={setSearchParams}
+          />
         </div>
       </div>
     </>

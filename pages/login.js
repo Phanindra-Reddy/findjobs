@@ -10,7 +10,7 @@ const Login = () => {
 
   return (
     <>
-    <div className="flex flex-col md:flex-row items-center justify-between p-2 px-10">
+    <div className="flex flex-col md:flex-row items-center justify-between p-2 px-10 py-5">
       <div>
         <Image
           src="/find-job-login.webp"

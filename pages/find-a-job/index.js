@@ -25,6 +25,11 @@ const FindAJob = () => {
   const router = useRouter();
   const { currentUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [searchParams, setSearchParams] = useState({
+    role: "",
+    company:"",
+    location: "",
+  });
   const [allJobs, setAllJobs] = useState([]);
 
   const fetchJobsPosted = async () => {
@@ -63,13 +68,15 @@ const FindAJob = () => {
   return (
     <div className="min-h-screen bg-gray-200">
       <div className="py-10 md:sticky md:top-10">
-        <SearchAJob />
+        <SearchAJob
+          searchParams={searchParams}
+          setSearchParams={setSearchParams}
+        />
       </div>
       <div className=" pb-10 px-2 md:px-48">
         <div className=" bg-white border border-gray-300 rounded-md mx-1">
           {allJobs &&
             allJobs?.map((job) => (
-              console.log(job),
               <div
                 key={job?.id}
                 className="md:h-40 group cursor-pointer my-3 px-6 md:px-10 pb-4 flex flex-col border-b"

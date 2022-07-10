@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
           showProfile: true,
         });
       }
-      router.push("settings")
+      router.push("/")
       notifySuccess("Login successfull.")
     } catch (err) {
       console.error(err);
