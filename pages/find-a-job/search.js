@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { notifyError } from "../../utils/toasters";
 import { firestore } from "../../utils/firebase";
@@ -75,6 +76,14 @@ const JobSearch = () => {
 
   return (
     <>
+      <Head>
+        <title>Search a job | Find Jobs</title>
+        <meta
+          name="description"
+          content="Find Jobs is online job finding portal. Developed and Designed by Phanindra Reddy."
+        />
+        <link rel="icon" href="/findjobnavbluewhite.svg" />
+      </Head>
       <div className="min-h-screen bg-gray-200">
         <div className="py-10 md:sticky md:top-10">
           <SearchAJob

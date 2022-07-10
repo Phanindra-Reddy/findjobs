@@ -1,4 +1,5 @@
 import React from "react";
+import Head from "next/head";
 import Footer from "../components/Footer";
 import Link from "next/link";
 
@@ -7,6 +8,14 @@ const PageNotFound = () => {
 
   return (
     <>
+    <Head>
+        <title>404 Page not found. | Find Jobs</title>
+        <meta
+          name="description"
+          content="Find Jobs is online job finding portal. Developed and Designed by Phanindra Reddy."
+        />
+        <link rel="icon" href="/findjobnavbluewhite.svg" />
+      </Head>
       <div className="min-h-screen flex flex-col items-center justify-center">
         <h1 className="text-3xl md:text-5xl">
           <b className="font-bold font-sans bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">

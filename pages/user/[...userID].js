@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -42,6 +43,14 @@ const UserProfile = () => {
 
   return (
     <>
+    <Head>
+        <title>{user?.name} | Find Jobs</title>
+        <meta
+          name="description"
+          content="Find Jobs is online job finding portal. Developed and Designed by Phanindra Reddy."
+        />
+        <link rel="icon" href="/findjobnavbluewhite.svg" />
+      </Head>
       <div>
         <div className="border border-slate-200 rounded flex flex-col items-center justify-center py-5 m-2 mt-10 md:m-10">
           <div className="rounded-full bg-gray-600 text-white text-5xl md:text-9xl flex items-center justify-center">

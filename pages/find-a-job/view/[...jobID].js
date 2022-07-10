@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useAuth } from "../../../hooks/AuthContext";
 import { firestore } from "../../../utils/firebase";
@@ -56,23 +57,105 @@ const ViewJobId = () => {
   }
 
   return (
-    <div className="h-full bg-slate-200 p-2 md:px-20 md:py-10">
-      {filteredJob
-        ?.filter((job) => job?.id === jobID[0])
-        ?.map((job) => (
-          <div key={job?.id} className="bg-white border rounded-md p-4 md:p-10">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-xl md:text-3xl font-medium text-blue-600">
-                  {job?.role}
-                </h1>
-                <p>
-                  <Link href={`${job?.company_url}`}>
-                    <a className="hover:underline">{job?.company_name}</a>
-                  </Link>
+    <>
+      <Head>
+        <title>View job | Find Jobs</title>
+        <meta
+          name="description"
+          content="Find Jobs is online job finding portal. Developed and Designed by Phanindra Reddy."
+        />
+        <link rel="icon" href="/findjobnavbluewhite.svg" />
+      </Head>
+      <div className="h-full bg-slate-200 p-2 md:px-20 md:py-10">
+        {filteredJob
+          ?.filter((job) => job?.id === jobID[0])
+          ?.map((job) => (
+            <div
+              key={job?.id}
+              className="bg-white border rounded-md p-4 md:p-10"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-xl md:text-3xl font-medium text-blue-600">
+                    {job?.role}
+                  </h1>
+                  <p>
+                    <Link href={`${job?.company_url}`}>
+                      <a className="hover:underline">{job?.company_name}</a>
+                    </Link>
+                  </p>
+                </div>
+                <div className="hidden md:block flex-col">
+                  <p>
+                    Created At:{" "}
+                    <span className="font-medium">{job?.createdAt}</span>
+                  </p>
+                  <p>
+                    Updated At:{" "}
+                    <span className="font-medium">{job?.updatedAt}</span>
+                  </p>
+                  <p>
+                    Posted by:{" "}
+                    <Link href={`/user/${job?.posted_by}`}>
+                      <a className="text-blue-600 hover:underline hover:font-medium">
+                        {job?.posted_by}
+                      </a>
+                    </Link>
+                  </p>
+                </div>
+              </div>
+              <div className="mt-5 my-1">
+                <p className="my-1">
+                  Location: <span className="font-medium">{job?.location}</span>{" "}
+                </p>
+                <p className="my-1">
+                  Job Type:{" "}
+                  <span className="font-medium">
+                    {job?.job_type} ({job?.onsite_remote})
+                  </span>
                 </p>
               </div>
-              <div className="hidden md:block flex-col">
+              <div className="flex items-center my-1">
+                <p className="mr-5">
+                  Exp: <span className="font-medium">{job?.experience}</span>
+                </p>
+                <p className="">
+                  Date Posted:{" "}
+                  <span className="font-medium">{job?.date_posted}</span>
+                  <small className="text-red-600">
+                    (Date mentioned on company site.)
+                  </small>
+                </p>
+              </div>
+              <Link href={`${job?.apply_link}`}>
+                <a
+                  target="_blank"
+                  className="w-28 p-2 my-5 text-white flex items-center justify-center font-medium bg-blue-600 hover:bg-blue-800 rounded-3xl"
+                >
+                  <span className="mr-2">Apply</span>
+                  <BiLinkExternal />
+                </a>
+              </Link>
+
+              <div className="my-5">
+                {job?.tags.split(",")?.map((tag, i) => (
+                  <button
+                    key={i}
+                    className="border p-1 rounded-md m-2 hover:bg-blue-400"
+                  >{`#${tag}`}</button>
+                ))}
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-medium underline mb-5">
+                  Description
+                </h3>
+                {job?.description
+                  ? ReactHtmlParser(job?.description)
+                  : "No Description."}
+              </div>
+
+              <div className="block md:hidden flex-col mt-10">
                 <p>
                   Created At:{" "}
                   <span className="font-medium">{job?.createdAt}</span>
@@ -91,79 +174,10 @@ const ViewJobId = () => {
                 </p>
               </div>
             </div>
-            <div className="mt-5 my-1">
-              <p className="my-1">
-                Location: <span className="font-medium">{job?.location}</span>{" "}
-              </p>
-              <p className="my-1">
-                Job Type:{" "}
-                <span className="font-medium">
-                  {job?.job_type} ({job?.onsite_remote})
-                </span>
-              </p>
-            </div>
-            <div className="flex items-center my-1">
-              <p className="mr-5">
-                Exp: <span className="font-medium">{job?.experience}</span>
-              </p>
-              <p className="">
-                Date Posted:{" "}
-                <span className="font-medium">{job?.date_posted}</span>
-                <small className="text-red-600">
-                  (Date mentioned on company site.)
-                </small>
-              </p>
-            </div>
-            <Link href={`${job?.apply_link}`}>
-              <a
-                target="_blank"
-                className="w-28 p-2 my-5 text-white flex items-center justify-center font-medium bg-blue-600 hover:bg-blue-800 rounded-3xl"
-              >
-                <span className="mr-2">Apply</span>
-                <BiLinkExternal />
-              </a>
-            </Link>
-
-            <div className="my-5">
-              {job?.tags.split(",")?.map((tag, i) => (
-                <button
-                  key={i}
-                  className="border p-1 rounded-md m-2 hover:bg-blue-400"
-                >{`#${tag}`}</button>
-              ))}
-            </div>
-
-            <div>
-              <h3 className="text-2xl font-medium underline mb-5">
-                Description
-              </h3>
-              {job?.description
-                ? ReactHtmlParser(job?.description)
-                : "No Description."}
-            </div>
-
-            <div className="block md:hidden flex-col mt-10">
-              <p>
-                Created At:{" "}
-                <span className="font-medium">{job?.createdAt}</span>
-              </p>
-              <p>
-                Updated At:{" "}
-                <span className="font-medium">{job?.updatedAt}</span>
-              </p>
-              <p>
-                Posted by:{" "}
-                <Link href={`/user/${job?.posted_by}`}>
-                  <a className="text-blue-600 hover:underline hover:font-medium">
-                    {job?.posted_by}
-                  </a>
-                </Link>
-              </p>
-            </div>
-          </div>
-        ))}
+          ))}
         {/* <button className="bg-red-700 text-white font-medium text-xl px-12 py-2 text-center rounded-md l my-10 hover:bg-red-900">Delete job</button> */}
-    </div>
+      </div>
+    </>
   );
 };
 

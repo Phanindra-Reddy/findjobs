@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { useAuth } from "../hooks/AuthContext";
@@ -60,9 +61,16 @@ const YourPofile = () => {
     fetchUserDetails();
   }, [currentUser]);
 
-
   return (
     <>
+      <Head>
+        <title>Pofile | Find Jobs</title>
+        <meta
+          name="description"
+          content="Find Jobs is online job finding portal. Developed and Designed by Phanindra Reddy."
+        />
+        <link rel="icon" href="/findjobnavbluewhite.svg" />
+      </Head>
       <div className="">
         <button
           onClick={() => router.push("/settings")}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { notifyError, notifySuccess } from "../../utils/toasters";
@@ -66,6 +67,14 @@ const JobsPosted = () => {
 
   return (
     <>
+    <Head>
+        <title>Jobs Posted | Find Jobs</title>
+        <meta
+          name="description"
+          content="Find Jobs is online job finding portal. Developed and Designed by Phanindra Reddy."
+        />
+        <link rel="icon" href="/findjobnavbluewhite.svg" />
+      </Head>
       <div>
         {postedJobs?.length > 0 && (
           <>

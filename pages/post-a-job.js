@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Head from "next/head";
 import dynamic from "next/dynamic";
 import { v4 as uuidv4 } from "uuid";
 import { notifyError, notifySuccess } from "../utils/toasters";
@@ -140,6 +141,15 @@ const PostaJob = () => {
   };
 
   return (
+    <>
+    <Head>
+        <title>Post a job | Find Jobs</title>
+        <meta
+          name="description"
+          content="Find Jobs is online job finding portal. Developed and Designed by Phanindra Reddy."
+        />
+        <link rel="icon" href="/findjobnavbluewhite.svg" />
+      </Head>
     <div className="md:mx-10 mb-10">
       <h1 className="text-2xl font-medium ml-5 mt-5">
         Hi {currentUser ? currentUser?.displayName : "Guest"}
@@ -457,6 +467,7 @@ const PostaJob = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

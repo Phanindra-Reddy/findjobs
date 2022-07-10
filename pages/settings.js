@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useAuth } from "../hooks/AuthContext";
@@ -158,6 +159,14 @@ const Settings = () => {
 
   return (
     <>
+      <Head>
+        <title>Settings | Find Jobs</title>
+        <meta
+          name="description"
+          content="Find Jobs is online job finding portal. Developed and Designed by Phanindra Reddy."
+        />
+        <link rel="icon" href="/findjobnavbluewhite.svg" />
+      </Head>
       <div className="h-full bg-gray-200 py-10 px-2 md:px-44">
         <h1 className="font-bold text-3xl mb-10">
           Settings {userDetails?.name && "for "}
