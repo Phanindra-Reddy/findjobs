@@ -86,7 +86,7 @@ const JobsPosted = () => {
                       key={job?.id}
                       className="md:h-40 group cursor-pointer my-3 px-6 md:px-10 pb-4 flex flex-col border-b"
                     >
-                      <div className="flex items-start md:items-center justify-between mb-4">
+                      <div className="flex items-start justify-between mb-4">
                         <div>
                           <h2
                             onClick={() =>

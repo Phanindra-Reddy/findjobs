@@ -386,9 +386,9 @@ const EditJobId = () => {
                           htmlFor="job_type"
                           className="block text-sm font-medium text-gray-700"
                         >
-                          Job Type
+                          Job Type(Availability)
                         </label>
-                        <input
+                        {/* <input
                           type="text"
                           name="job_type"
                           id="job_type"
@@ -402,7 +402,29 @@ const EditJobId = () => {
                               job_type: e.target.value,
                             })
                           }
-                        />
+                        /> */}
+                        <select
+                          id="job_type"
+                          name="job_type"
+                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                          value={newJob?.job_type}
+                          onChange={(e) =>
+                            setNewJob({
+                              ...newJob,
+                              job_type: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">Select Availability</option>
+                          <option value="Full Time">Full Time</option>
+                          <option value="Part Time">Part Time</option>
+                          <option value="Remote Work">Remote Work</option>
+                          <option value="Code Collab">Code Collab</option>
+                          <option value="Immediate Joiner">
+                            Immediate Joiner
+                          </option>
+                          <option value="Internship">Internship</option>
+                        </select>
                       </div>
 
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
@@ -412,7 +434,7 @@ const EditJobId = () => {
                         >
                           Onsite/Remote/Hybrid
                         </label>
-                        <input
+                        {/* <input
                           type="text"
                           name="onsite_remote"
                           id="onsite_remote"
@@ -426,7 +448,24 @@ const EditJobId = () => {
                               onsite_remote: e.target.value,
                             })
                           }
-                        />
+                        /> */}
+                        <select
+                          id="onsite_remote"
+                          name="onsite_remote"
+                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                          value={newJob?.onsite_remote}
+                          onChange={(e) =>
+                            setNewJob({
+                              ...newJob,
+                              onsite_remote: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">Select Availability</option>
+                          <option value="On-site">On-site</option>
+                          <option value="Remote">Remote</option>
+                          <option value="Hybrid">Hybrid</option>
+                        </select>
                       </div>
 
                       <div className="col-span-6 sm:col-span-6 lg:col-span-6">

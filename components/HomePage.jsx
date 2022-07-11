@@ -6,7 +6,7 @@ import SearchAJob from "./SearchAJob";
 const HomePage = () => {
   const [searchParams, setSearchParams] = useState({
     role: "",
-    company:"",
+    company: "",
     location: "",
   });
   return (
@@ -22,9 +22,9 @@ const HomePage = () => {
               </b>
             </h1>
             <p className="md:w-96 text-left my-5">
-              A central location to find coders. Collab or hire coders with no
-              middleman. An open platform to hire coders based on skills and
-              projects. Showcase your work!
+              A central location to find jobs with out registration to search
+              and apply for jobs. An open platform to search for jobs based on
+              your skill, location and company.
             </p>
             <Link href="/find-a-job">
               <a className="rounded-md text-xl font-medium py-3 px-10 border-2 border-violet-500 text-white bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-fuchsia-500 hover:to-violet-500">

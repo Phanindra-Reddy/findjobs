@@ -19,6 +19,7 @@ import SearchAJob from "../../components/SearchAJob";
 import Link from "next/link";
 import { BsFillEyeFill } from "react-icons/bs";
 import moment from "moment";
+import Image from "next/image";
 
 const JobSearch = () => {
   const router = useRouter();
@@ -164,6 +165,23 @@ const JobSearch = () => {
               ))}
           </div>
         </div>
+        {allJobs?.length === 0 && (
+          <>
+            <>
+              <div className="flex flex-col items-center justify-center">
+                <h1>
+                <span className="font-medium text-lg">No jobs found for</span> {role && <span>Role: {role},</span>} {company && <span>Company: {company},{" "}</span>} {location && <span>Location: {location}{"."}</span>}
+                </h1>
+                <button
+                  onClick={() => router.push("post-a-job")}
+                  className="h-14 rounded-md text-xl font-medium mt-8 px-10 border-2 border-violet-500 text-white bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-fuchsia-500 hover:to-violet-500"
+                >
+                  Post a job
+                </button>
+              </div>
+            </>
+          </>
+        )}
       </div>
     </>
   );

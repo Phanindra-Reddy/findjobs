@@ -25,7 +25,7 @@ import Image from "next/image";
 const Settings = () => {
   const router = useRouter();
   const { currentUser } = useAuth();
-  const [navActive, setNavActive] = useState("account");
+  const [navActive, setNavActive] = useState("profile");
   const [update, setIsUpdate] = useState(false);
   const [deleteAlljobsModal, setDeleteAlljobsModal] = useState(false);
   const [deleteUserModal, setDeleteUserModal] = useState(false);
