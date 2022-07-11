@@ -6,8 +6,15 @@ import { useRouter } from "next/router";
 import { useAuth } from "../hooks/AuthContext";
 
 const Login = () => {
-  const { signInWithGoogle } = useAuth();
+  const { signInWithGoogle, currentUser } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (currentUser) {
+      router.push("/");
+      return;
+    }
+  }, [currentUser]);
 
   return (
     <>
@@ -30,7 +37,7 @@ const Login = () => {
         </div>
         <div className="flex flex-col w-80 md:w-1/3 md:mr-20">
           <h3 className="underline text-center my-5 md:mb-5">
-            Create your account with
+            Login/Register to your account with
           </h3>
           <button
             onClick={() => {
@@ -70,6 +77,10 @@ const Login = () => {
               <p className="font-medium ml-5 text-xl">LinkedIn</p>
             </a>
           </button>
+          <small className="text-center mt-5">
+            By continuing, you agree to accept our Privacy Policy & Terms of
+            Service.
+          </small>
         </div>
       </div>
       <Footer />

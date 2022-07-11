@@ -15,13 +15,20 @@ import {
   doc,
 } from "firebase/firestore";
 import { notifyError, notifySuccess } from "../utils/toasters";
+import { MdAccountCircle, MdManageAccounts } from "react-icons/md";
+import { CgWebsite } from "react-icons/cg";
+import Footer from "../components/Footer";
+import DangerZoneModal from "../components/DangerAllJobsModal";
+import DangerDeleteUserModal from "../components/DangerDeleteUserModal";
+import Image from "next/image";
 
 const Settings = () => {
   const router = useRouter();
   const { currentUser } = useAuth();
-  const [navActive, setNavActive] = useState("profile");
+  const [navActive, setNavActive] = useState("account");
   const [update, setIsUpdate] = useState(false);
-
+  const [deleteAlljobsModal, setDeleteAlljobsModal] = useState(false);
+  const [deleteUserModal, setDeleteUserModal] = useState(false);
   const [userDetails, setUserDetails] = useState({
     name: "",
     email: "",
@@ -157,6 +164,14 @@ const Settings = () => {
     setIsUpdate(false);
   };
 
+  const handleDeleteAllJobsModal = () => {
+    setDeleteAlljobsModal(!deleteAlljobsModal);
+  };
+
+  const handleDeleteUserModal = () => {
+    setDeleteUserModal(!deleteUserModal);
+  };
+
   return (
     <>
       <Head>
@@ -167,9 +182,10 @@ const Settings = () => {
         />
         <link rel="icon" href="/findjobnavbluewhite.svg" />
       </Head>
-      <div className="h-full bg-gray-200 py-10 px-2 md:px-44">
-        <h1 className="font-bold text-3xl mb-10">
+      <div className="h-full bg-gray-200 py-10 px-2 md:px-32">
+        <h1 className="font-bold text-center md:text-left text-3xl mb-10">
           Settings {userDetails?.name && "for "}
+          <br className="block md:hidden" />
           <Link href="/profile">
             <a>
               <span className="text-blue-600">
@@ -180,23 +196,34 @@ const Settings = () => {
         </h1>
 
         <div className="flex flex-col md:flex-row md:m-0">
-          <div className="hidden md:block md:basis-2/5 mr-5">
+          <div className="hidden md:block md:basis-1/5 mr-5">
             <div className="flex flex-col place-items-start">
               <button
                 onClick={() => setNavActive("profile")}
-                className={`w-full my-1 p-2 hover:bg-blue-200 rounded-md ${
+                className={`w-full flex items-center justify-start py-2 px-5 hover:bg-blue-200 rounded-md ${
                   navActive === "profile" && "bg-white font-medium"
                 }`}
               >
-                😊 Profile
+                <MdAccountCircle className="mr-2 h-6 w-6 text-yellow-500" />
+                <p>Profile</p>
               </button>
               <button
                 onClick={() => setNavActive("account")}
-                className={`w-full my-1 p-2 hover:bg-blue-200 rounded-md ${
+                className={`w-full flex items-center justify-start py-2 px-5 hover:bg-blue-200 rounded-md ${
                   navActive === "account" && "bg-white font-medium"
                 }`}
               >
-                🌏 Account
+                <MdManageAccounts className="mr-2 h-6 w-6 text-slate-600" />
+                <p>Account</p>
+              </button>
+              <button
+                onClick={() => setNavActive("about")}
+                className={`w-full flex items-center justify-start py-2 px-5 hover:bg-blue-200 rounded-md ${
+                  navActive === "about" && "bg-white font-medium"
+                }`}
+              >
+                <CgWebsite className="mr-2 h-6 w-6 text-blue-600" />
+                <p>About</p>
               </button>
             </div>
           </div>
@@ -209,6 +236,7 @@ const Settings = () => {
             >
               <option value="profile">Profile</option>
               <option value="account">Account</option>
+              <option value="about">About</option>
             </select>
           </div>
 
@@ -279,8 +307,8 @@ const Settings = () => {
                         // })}
                       />
                       <small className="text-xs text-red-700 font-medium">
-                        Username is given by us based on your email.(can not be
-                        changed)
+                        Username is given by us based on your email (can not be
+                        changed).
                       </small>
                     </div>
 
@@ -516,7 +544,7 @@ const Settings = () => {
                           }
                         />
                         <label htmlFor="profile" className="font-medium">
-                          Show my profile publicly available.
+                          Make my profile publicly available.
                         </label>
                       </div>
 
@@ -556,7 +584,7 @@ const Settings = () => {
                       Danger Zone
                     </h2>
 
-                    <div className="flex flex-col items-start mb-5">
+                    {/* <div className="flex flex-col items-start mb-5">
                       <h3 className="font-bold text-xl">
                         Delete all jobs posted
                       </h3>
@@ -567,11 +595,14 @@ const Settings = () => {
                           will permanently deleted from our database.
                         </li>
                       </ul>
-                      <button className="bg-red-500 text-white rounded-md font-medium text-lg p-2 hover:bg-red-600">
+                      <button
+                        onClick={handleDeleteAllJobsModal}
+                        className="bg-red-500 text-white rounded-md font-medium text-lg p-2 hover:bg-red-600"
+                      >
                         Delete All Jobs
                       </button>
-                    </div>
-
+                    </div> */}
+                    <div className="border-b-2 my-5"></div>
                     <div className="flex flex-col items-start mb-5">
                       <h3 className="font-bold text-xl">Delete account</h3>
                       <p className="my-2">Deleting your account will:</p>
@@ -589,17 +620,100 @@ const Settings = () => {
                           Allow your username to become available to anyone.
                         </li>
                       </ul>
-                      <button className="bg-red-600 text-white rounded-md font-medium text-lg p-2 hover:bg-red-700">
-                        Delete Account
+                      <button onClick={handleDeleteUserModal} className="bg-red-600 text-white rounded-md font-medium text-lg p-2 hover:bg-red-700">
+                        Delete My Account
                       </button>
                     </div>
                   </div>
                 </div>
               </>
             )}
+
+            {navActive === "about" && (
+              <div className="bg-white border rounded-lg border-gray-300 w-full p-5 mb-10">
+                <div className="flex items-center justify-between">
+                  <h1 className="mb-2 text-3xl font-medium underline">About</h1>
+                  <Image
+                    src="/myimage.jpg"
+                    alt="Phanindra Reddy"
+                    width={50}
+                    height={50}
+                  />
+                </div>
+                <p className="text-lg">
+                  Hi, I&apos;m{" "}
+                  <Link href="https://phanindra.vercel.app/">
+                    <a
+                      target="_blank"
+                      className="text-blue-600 hover:underline"
+                    >
+                      Phanindra Reddy.{" "}
+                    </a>
+                  </Link>
+                  Currently working as a Front end developer (Reactjs).
+                </p>
+                <br />
+                <p className="text-slate-500 text-lg">
+                  The main intention behind building this project is to help the
+                  community to find jobs in different domains. My sincere
+                  request to you all is to just post the jobs on this platform
+                  when there are any openings in your company (I mean just from
+                  your company, whether it is fresher or more experienced).
+                </p>
+                <div className="my-5">
+                  <h2 className="font-medium underline text-md">
+                    Tech Stack Used:
+                  </h2>
+                  <div className="flex items-center mt-2">
+                    <Image
+                      src="/nextjs.webp"
+                      alt="Next.js"
+                      width={50}
+                      height={50}
+                    />
+
+                    <Image
+                      src="/tailwindcss.png"
+                      alt="TailwindCSS"
+                      width={50}
+                      height={50}
+                    />
+                    <Image
+                      src="/firebase.svg"
+                      alt="Fiebase"
+                      width={50}
+                      height={50}
+                    />
+                  </div>
+                </div>
+                <p>
+                  Note:{" "}
+                  <span>
+                    Any one who seen this project please reach out to me,
+                    because I want to take this to next level. I want you to
+                    build backend(including DB) using Java or Nodejs or Golang
+                    or any Server side language.
+                  </span>
+                </p>
+                <p className="mt-5">
+                  <span>Front-end: Nextjs and TailwindCSS.</span>
+                  <br />
+                  <span>Back-end: Any server side language(your choice).</span>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
+      <Footer />
+      <DangerZoneModal
+        deleteAlljobsModal={deleteAlljobsModal}
+        handleDeleteAllJobsModal={handleDeleteAllJobsModal}
+      />
+      <DangerDeleteUserModal
+        deleteUserModal={deleteUserModal}
+        handleDeleteUserModal={handleDeleteUserModal}
+      />
     </>
   );
 };

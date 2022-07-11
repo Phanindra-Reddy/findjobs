@@ -175,7 +175,6 @@ const ViewJobId = () => {
               </div>
             </div>
           ))}
-        {/* <button className="bg-red-700 text-white font-medium text-xl px-12 py-2 text-center rounded-md l my-10 hover:bg-red-900">Delete job</button> */}
       </div>
     </>
   );

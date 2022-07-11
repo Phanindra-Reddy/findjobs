@@ -3,11 +3,18 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useAuth } from "../../../hooks/AuthContext";
 import { firestore } from "../../../utils/firebase";
-import { collection, query, getDocs, where } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  where,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import Link from "next/link";
 import ReactHtmlParser from "react-html-parser";
 import { BiLinkExternal } from "react-icons/bi";
-import { notifyError } from "../../../utils/toasters";
+import { notifyError, notifyInfo } from "../../../utils/toasters";
 
 const ViewJobId = () => {
   const { currentUser } = useAuth();
@@ -15,6 +22,7 @@ const ViewJobId = () => {
   const { jobID } = router.query;
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
   const [filteredJob, setFilteredJob] = useState([]);
 
   const fetchDocument = async () => {
@@ -50,6 +58,32 @@ const ViewJobId = () => {
   useEffect(() => {
     fetchDocument();
   }, []);
+
+  const deleteJob = async (val) => {
+    setIsUpdate(true);
+
+    try {
+      const q = query(
+        collection(firestore, "users"),
+        where("uid", "==", currentUser?.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      let docID = "";
+      querySnapshot.forEach((doc) => {
+        docID = doc.id;
+      });
+
+      const docRef = doc(firestore, `users/${docID}/jobs/${jobID}`);
+      await deleteDoc(docRef);
+      router.push("/jobs-posted");
+      notifyInfo("Job deleted successfully.");
+    } catch (error) {
+      console.log(error.message);
+      notifyError(`${error.message}`);
+    }
+
+    setIsUpdate(false);
+  };
 
   if (isLoading) {
     return (
@@ -165,7 +199,40 @@ const ViewJobId = () => {
             </div>
           ))}
 
-        {/* <button className="bg-red-700 text-white font-medium text-xl px-12 py-2 text-center rounded-md l my-10 hover:bg-red-900">Delete job</button> */}
+        {filteredJob?.length > 0 && (
+          <button
+            onClick={() => deleteJob(jobID[0])}
+            className="flex items-center bg-red-700 text-white font-medium text-xl px-12 py-2 text-center rounded-md l my-10 hover:bg-red-900"
+          >
+            {isUpdate ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Deleting job...
+              </>
+            ) : (
+              <>Delete Job</>
+            )}
+          </button>
+        )}
       </div>
     </>
   );
