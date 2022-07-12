@@ -375,6 +375,7 @@ const PostaJob = () => {
                           <option value="">Select Availability</option>
                           <option value="Full Time">Full Time</option>
                           <option value="Part Time">Part Time</option>
+                          <option value="Contract">Contract</option>
                           <option value="Remote Work">Remote Work</option>
                           <option value="Code Collab">Code Collab</option>
                           <option value="Immediate Joiner">

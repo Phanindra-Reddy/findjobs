@@ -79,6 +79,7 @@ const JobsPosted = () => {
         {postedJobs?.length > 0 && (
           <>
             <div className="min-h-screen bg-gray-200 py-10 px-2 md:px-48">
+            {postedJobs?.length >0 && (<h1 className="mb-5 text-3xl font-medium">Total jobs Posted:{" "} {postedJobs?.length}</h1>)}
               <div className=" bg-white border border-gray-300 rounded-md mx-1">
                 {postedJobs &&
                   postedJobs?.map((job) => (
