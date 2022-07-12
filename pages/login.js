@@ -6,7 +6,12 @@ import { useRouter } from "next/router";
 import { useAuth } from "../hooks/AuthContext";
 
 const Login = () => {
-  const { signInWithGoogle, currentUser } = useAuth();
+  const {
+    signInWithGoogle,
+    signInWithGithub,
+    signInWithMicrosoft,
+    currentUser,
+  } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -55,7 +60,11 @@ const Login = () => {
               <p className="font-medium ml-5 text-xl">Google</p>
             </a>
           </button>
-          <button>
+          <button
+            onClick={() => {
+              signInWithGithub();
+            }}
+          >
             <a className="flex items-center border-2 border-black rounded-md py-2 px-5 my-2 hover:border-blue-600">
               <Image
                 src="/github.webp"
@@ -66,15 +75,19 @@ const Login = () => {
               <p className="font-medium ml-5 text-xl">GitHub</p>
             </a>
           </button>
-          <button>
+          <button
+            onClick={() => {
+              signInWithMicrosoft();
+            }}
+          >
             <a className="flex items-center border-2 border-black rounded-md py-2 px-5 my-2 hover:border-blue-600">
               <Image
-                src="/linkedin.webp"
-                alt="linkedin-login"
+                src="/microsoft.png"
+                alt="microsoft-login"
                 width={30}
                 height={30}
               />
-              <p className="font-medium ml-5 text-xl">LinkedIn</p>
+              <p className="font-medium ml-5 text-xl">Microsoft</p>
             </a>
           </button>
           <small className="text-center mt-5">
