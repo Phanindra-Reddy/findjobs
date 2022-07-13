@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,10 +21,20 @@ import {
 import moment from "moment";
 import { BsFillEyeFill } from "react-icons/bs";
 import SearchAJob from "../../components/SearchAJob";
+import Pagination from "../../components/Pagination";
+
+const PageSize = 10;
 
 const FindAJob = () => {
   const router = useRouter();
   const { currentUser } = useAuth();
+
+  //pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const firstPageIndex = (currentPage - 1) * PageSize;
+  const lastPageIndex = firstPageIndex + PageSize;
+
+  //fetching & searching for jobs
   const [isLoading, setIsLoading] = useState(false);
   const [searchParams, setSearchParams] = useState({
     role: "",
@@ -86,7 +96,7 @@ const FindAJob = () => {
         <div className=" pb-10 px-2 md:px-48">
           <div className=" bg-white border border-gray-300 rounded-md mx-1">
             {allJobs &&
-              allJobs?.map((job) => (
+              allJobs?.slice(firstPageIndex, lastPageIndex)?.map((job) => (
                 <div
                   key={job?.id}
                   className="md:h-40 group cursor-pointer my-3 px-6 md:px-10 pb-4 flex flex-col border-b"
@@ -155,6 +165,15 @@ const FindAJob = () => {
                 </div>
               ))}
           </div>
+        </div>
+        <div className="flex items-end justify-center pb-10">
+          <Pagination
+            className="pagination-bar"
+            currentPage={currentPage}
+            totalCount={allJobs.length}
+            pageSize={PageSize}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
         </div>
       </div>
     </>

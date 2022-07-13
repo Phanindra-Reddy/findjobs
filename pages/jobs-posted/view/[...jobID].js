@@ -146,7 +146,7 @@ const ViewJobId = () => {
                   </span>
                 </p>
               </div>
-              <div className="flex items-center my-1">
+              <div className="flex flex-col md:flex-row md:items-center my-1">
                 <p className="mr-5">
                   Exp: <span className="font-medium">{job?.experience}</span>
                 </p>
