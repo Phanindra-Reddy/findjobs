@@ -113,7 +113,7 @@ const JobSearch = () => {
                     <div>
                       <h2
                         onClick={() =>
-                          router.push(`find-a-job/view/${job?.id}`)
+                          router.push(`view/${job?.id}`)
                         }
                         className="text-xl text-blue-600 font-medium group-hover:underline"
                       >
