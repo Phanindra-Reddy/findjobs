@@ -5,20 +5,10 @@ import { v4 as uuidv4 } from "uuid";
 import { notifyError, notifySuccess } from "../utils/toasters";
 import { useRouter } from "next/router";
 import { useAuth } from "../hooks/AuthContext";
-import { firestore } from "../utils/firebase";
-import {
-  collection,
-  addDoc,
-  query,
-  where,
-  getDoc,
-  getDocs,
-  updateDoc,
-  doc,
-  setDoc,
-  serverTimestamp,
-} from "firebase/firestore";
 import moment from "moment";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 
@@ -32,12 +22,12 @@ const modules = {
     ["blockquote", "code-block"],
     [{ list: "ordered" }, { list: "bullet" }],
     [{ indent: "-1" }, { indent: "+1" }, { align: [] }],
-    ["link"],
+    ["link", "image"],
     ["clean"],
   ],
 };
 
-const PostaJob = () => {
+const PostHiringDrive = () => {
   const currentTime = new Date().toLocaleString("en-Us", {
     timeZone: "Asia/Kolkata",
   });
@@ -47,16 +37,13 @@ const PostaJob = () => {
 
   const [newJob, setNewJob] = useState({
     company_name: "",
-    company_url: "",
     role: "",
     apply_link: "",
     experience: "",
     location: "",
     date_posted: "",
-    job_type: "",
-    onsite_remote: "",
-    description: "",
-    tags: "",
+    eligibility: "",
+    skills_required: "",
   });
 
   useEffect(() => {
@@ -82,68 +69,24 @@ const PostaJob = () => {
     }
   }
 
-  const postJob = async (e) => {
-    e.preventDefault();
-
-    setIsUpdate(true);
-
-    const q = query(
-      collection(firestore, "users"),
-      where("uid", "==", currentUser?.uid)
-    );
-    const docs = await getDocs(q);
-
-    let jobID = uuidv4();
-
-    docs?.docs?.map(async (v) => {
-      await setDoc(doc(firestore, `users/${v.id}/jobs`, jobID), {
-        id: jobID,
-        company_name: newJob?.company_name,
-        company_url: newJob?.company_url,
-        role: newJob?.role,
-        apply_link: newJob?.apply_link,
-        experience: newJob?.experience,
-        location: newJob?.location,
-        date_posted: newJob?.date_posted,
-        job_type: newJob?.job_type,
-        onsite_remote: newJob?.onsite_remote,
-        description: newJob?.description,
-        tags: newJob?.tags,
-        posted_by: currentUser?.email?.split("@")[0],
-        createdAt: currentTime,
-        updatedAt: currentTime,
-      });
-    });
-
-    setIsUpdate(false);
-    notifySuccess("Job added successfully.");
-    router.push("jobs-posted");
+  const onEditorDescriptionStateChange = (value) => {
     setNewJob({
-      company_name: "",
-      company_url: "",
-      role: "",
-      apply_link: "",
-      experience: "",
-      location: "",
-      date_posted: "",
-      job_type: "",
-      onsite_remote: "",
-      description: "",
-      tags: "",
+      ...newJob,
+      skills_required: value,
     });
   };
 
-  const onEditorStateChange = (value) => {
+  const onEditorEligibilityStateChange = (value) => {
     setNewJob({
       ...newJob,
-      description: value,
+      eligibility: value,
     });
   };
 
   return (
     <>
       <Head>
-        <title>Post a job | Find Jobs</title>
+        <title>Post a Hiring Drive | Find Jobs</title>
         <meta
           name="description"
           content="Find Jobs is online job finding portal. Developed and Designed by Phanindra Reddy."
@@ -151,8 +94,8 @@ const PostaJob = () => {
         <link rel="icon" href="/findjobnavbluewhite.svg" />
       </Head>
       <div className="md:mx-10 mb-10">
-        <h1 className="text-center my-5 text-3xl font-medium underline text-blue-700">
-          Post a Job
+        {/* <h1 className="text-center my-5 text-3xl font-medium underline text-blue-700">
+          Post a Hiring Drive
         </h1>
         <h1 className="text-xl font-medium ml-5 mt-5">
           Hi {currentUser ? currentUser?.displayName : "Guest"}
@@ -161,7 +104,7 @@ const PostaJob = () => {
         <div>
           <div className="mt-10 sm:mt-0">
             <div className="mt-5">
-              <form onSubmit={postJob}>
+              <form>
                 <div className="shadow overflow-hidden sm:rounded-md">
                   <div className="px-4 py-5 bg-white sm:p-6">
                     <div className="grid grid-cols-6 gap-6">
@@ -185,31 +128,6 @@ const PostaJob = () => {
                             setNewJob({
                               ...newJob,
                               company_name: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-
-                      <div className="col-span-6 sm:col-span-3">
-                        <label
-                          htmlFor="company_url"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Company Url
-                        </label>
-                        <input
-                          type="text"
-                          name="company_url"
-                          id="company_url"
-                          placeholder="https://www.google.com"
-                          autoComplete="family-name"
-                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          required
-                          value={newJob?.company_url}
-                          onChange={(e) =>
-                            setNewJob({
-                              ...newJob,
-                              company_url: e.target.value,
                             })
                           }
                         />
@@ -276,7 +194,7 @@ const PostaJob = () => {
                           type="text"
                           name="experience"
                           id="experience"
-                          placeholder="2-8 years or 10+ years"
+                          placeholder="Fresher or 2-8 years or 10+ years"
                           autoComplete="family-name"
                           className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                           required
@@ -301,7 +219,7 @@ const PostaJob = () => {
                           type="text"
                           name="location"
                           id="location"
-                          placeholder="Hyderabad, India"
+                          placeholder="Hyderabad, Telangana, India"
                           autoComplete="family-name"
                           className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                           required
@@ -315,7 +233,7 @@ const PostaJob = () => {
                         />
                       </div>
 
-                      <div className="col-span-6 sm:col-span-6 lg:col-span-2">
+                      <div className="col-span-6 sm:col-span-3">
                         <label
                           htmlFor="date-posted"
                           className="block text-sm font-medium text-gray-700"
@@ -340,109 +258,19 @@ const PostaJob = () => {
                         />
                       </div>
 
-                      <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                        <label
-                          htmlFor="job_type"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Job Type(Availability)
-                        </label>
-                        {/* <input
-                        type="text"
-                        name="job_type"
-                        id="job_type"
-                        autoComplete="address-level1"
-                        className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                        required
-                        value={newJob?.job_type}
-                        onChange={(e) =>
-                          setNewJob({
-                            ...newJob,
-                            job_type: e.target.value,
-                          })
-                        }
-                      /> */}
-                        <select
-                          id="job_type"
-                          name="job_type"
-                          placeholder="Full-Time"
-                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          value={newJob?.job_type}
-                          onChange={(e) =>
-                            setNewJob({
-                              ...newJob,
-                              job_type: e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select Availability</option>
-                          <option value="Full Time">Full Time</option>
-                          <option value="Part Time">Part Time</option>
-                          <option value="Contract">Contract</option>
-                          <option value="Remote Work">Remote Work</option>
-                          <option value="Code Collab">Code Collab</option>
-                          <option value="Immediate Joiner">
-                            Immediate Joiner
-                          </option>
-                          <option value="Internship">Internship</option>
-                        </select>
-                      </div>
-
-                      <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                        <label
-                          htmlFor="onsite_remote"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Onsite/Remote/Hybrid
-                        </label>
-                        {/* <input
-                          type="text"
-                          name="onsite_remote"
-                          id="onsite_remote"
-                          autoComplete="onsite-remote"
-                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          required
-                          value={newJob?.onsite_remote}
-                          onChange={(e) =>
-                            setNewJob({
-                              ...newJob,
-                              onsite_remote: e.target.value,
-                            })
-                          }
-                        /> */}
-                        <select
-                          id="onsite_remote"
-                          name="onsite_remote"
-                          placeholder="On-site"
-                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          value={newJob?.onsite_remote}
-                          onChange={(e) =>
-                            setNewJob({
-                              ...newJob,
-                              onsite_remote: e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select Availability</option>
-                          <option value="On-site">On-site</option>
-                          <option value="Remote">Remote</option>
-                          <option value="Hybrid">Hybrid</option>
-                        </select>
-                      </div>
-
                       <div className="col-span-6 sm:col-span-6 lg:col-span-6">
                         <label
                           htmlFor="description"
                           className="block text-sm font-medium text-gray-700"
                         >
-                          Description
+                          Eligibility
                         </label>
                         <div className="mt-1">
                           <ReactQuill
                             placeholder="Write job description here..."
                             theme="snow"
-                            value={newJob?.description}
-                            onChange={onEditorStateChange}
+                            value={newJob?.eligibility}
+                            onChange={onEditorEligibilityStateChange}
                             modules={modules}
                           />
                         </div>
@@ -450,33 +278,20 @@ const PostaJob = () => {
 
                       <div className="col-span-6 sm:col-span-6 lg:col-span-6">
                         <label
-                          htmlFor="tags"
+                          htmlFor="description"
                           className="block text-sm font-medium text-gray-700"
                         >
-                          Tags
+                          Skills Required & Description
                         </label>
-                        <div>
-                          <input
-                            type="text"
-                            id="tags"
-                            name="tags"
-                            className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                            placeholder="reactjs, javadeveloper, jobs"
-                            value={newJob?.tags}
-                            onChange={(e) =>
-                              setNewJob({
-                                ...newJob,
-                                tags: e.target.value,
-                              })
-                            }
+                        <div className="mt-1">
+                          <ReactQuill
+                            placeholder="Write job description here..."
+                            theme="snow"
+                            value={newJob?.skills_required}
+                            onChange={onEditorDescriptionStateChange}
+                            modules={modules}
                           />
-                          <small className="text-xs text-red-700 font-medium flex items-center text-center">
-                            <span className="text-xl font-bold mr-1">*</span>{" "}
-                            Separate tags by comma.(Ex: reactjs, javajobs,
-                            software, itjobs)
-                          </small>
                         </div>
-                        <div className="mt-1"></div>
                       </div>
                     </div>
                   </div>
@@ -507,10 +322,10 @@ const PostaJob = () => {
                               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                             ></path>
                           </svg>
-                          Posting job...
+                          Posting a hiring drive...
                         </>
                       ) : (
-                        <>Post Job</>
+                        <>Post a Hiring Drive</>
                       )}
                     </button>
                   </div>
@@ -518,10 +333,15 @@ const PostaJob = () => {
               </form>
             </div>
           </div>
+        </div> */}
+
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <h1 className="text-center text-3xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">Coming Soon...</h1>
         </div>
+        
       </div>
     </>
   );
 };
 
-export default PostaJob;
+export default PostHiringDrive;

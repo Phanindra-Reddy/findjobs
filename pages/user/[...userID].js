@@ -10,18 +10,25 @@ const UserProfile = () => {
   const router = useRouter();
   const { userID } = router.query;
   const [isLoading, setIsLoading] = useState(false);
+  const [userFetchError, setUserFetchError] = useState(false);
   const [user, setUser] = useState();
 
   const fetchUser = async () => {
     setIsLoading(true);
 
-    const q = query(
-      collection(firestore, "users"),
-      where("username", "==", userID[0])
-    );
-    const querySnapshot = await getDocs(q);
-    const data = querySnapshot.docs[0].data();
-    setUser(data);
+    try {
+      const q = query(
+        collection(firestore, "users"),
+        where("username", "==", userID[0])
+      );
+      const querySnapshot = await getDocs(q);
+      const data = querySnapshot.docs[0].data();
+      setUser(data);
+    } catch (error) {
+      if (error) {
+        setUserFetchError(true);
+      }
+    }
 
     setIsLoading(false);
   };
@@ -40,10 +47,24 @@ const UserProfile = () => {
     );
   }
 
+  if (userFetchError) {
+    return (
+      <>
+        <div className="h-screen flex items-center justify-center">
+        <h1 className="text-3xl md:text-5xl">
+          <b className="font-bold font-sans bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
+            User not found
+          </b>
+          <span>🙂</span>
+        </h1>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
-    <Head>
+      <Head>
         <title>{user?.name} | Find Jobs</title>
         <meta
           name="description"

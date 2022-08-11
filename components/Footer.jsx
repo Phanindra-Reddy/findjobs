@@ -18,6 +18,9 @@ const Footer = () => {
         <Link href="/">
           <a className="hover:underline font-medium mr-2 md:mr-5">Home</a>
         </Link>
+        <Link href="/about">
+          <a className="hover:underline font-medium mr-2 md:mr-5">About</a>
+        </Link>
         <Link href="/disclaimer">
           <a className="hover:underline font-medium mr-2 md:mr-5">Disclaimer</a>
         </Link>

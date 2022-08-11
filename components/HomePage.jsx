@@ -26,11 +26,19 @@ const HomePage = () => {
               and apply for jobs. An open platform to search for jobs based on
               your skill, location and company.
             </p>
-            <Link href="/find-a-job">
-              <a className="rounded-md text-xl font-medium py-3 px-10 border-2 border-violet-500 text-white bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-fuchsia-500 hover:to-violet-500">
-                Find Job
-              </a>
-            </Link>
+
+            <div className="flex flex-col md:flex-row">
+              <Link href="/find-a-job">
+                <a className="rounded-md text-xl text-center font-medium py-3 px-10 border-2 border-violet-500 text-white bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-fuchsia-500 hover:to-violet-500">
+                  Find Job
+                </a>
+              </Link>
+              <Link href="/latest-hiring-drives">
+                <a className="rounded-md text-xl text-center font-medium py-3 px-10 md:ml-10 mt-5 md:mt-0 border-2 border-fuchsia-500 bg-gray-200 hover:bg-white">
+                  Latest Hiring Drives
+                </a>
+              </Link>
+            </div>
           </div>
           <Image
             src="/find-jobs-home.webp"
