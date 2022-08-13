@@ -145,7 +145,7 @@ const DriveSearch = () => {
                     <div>
                       <h2
                         onClick={() =>
-                          router.push(`latest-hiring-drives/view/${drive?.id}`)
+                          router.push(`view/${drive?.id}`)
                         }
                         className="text-xl text-blue-600 font-medium group-hover:underline"
                       >
@@ -163,7 +163,7 @@ const DriveSearch = () => {
                     <div className="hidden md:block">
                       <button
                         onClick={() =>
-                          router.push(`latest-hiring-drives/view/${drive?.id}`)
+                          router.push(`view/${drive?.id}`)
                         }
                         className="hidden group-hover:block"
                       >
