@@ -179,6 +179,20 @@ function Navbar() {
                       <Menu.Item>
                         {({ active }) => (
                           <div
+                            onClick={() => router.push("/hiring-drives-posted")}
+                            type="button"
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-violet-500 hover:text-white"
+                            )}
+                          >
+                            Drives Posted
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
                             onClick={() => router.push("/profile")}
                             type="button"
                             className={classNames(
@@ -268,6 +282,16 @@ function Navbar() {
                       className="w-full text-center text-gray-300 hover:bg-blue-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
                     >
                       Jobs Posted
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        router.push("/hiring-drives-posted");
+                        setIsOpen(!open);
+                      }}
+                      className="w-full text-center text-gray-300 hover:bg-blue-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                    >
+                      Drives Posted
                     </button>
 
                     <button

@@ -30,7 +30,10 @@ const JobsPosted = () => {
   const fetchJobsPosted = async () => {
     setIsLoading(true);
 
-    const q = query(collection(firestore, "users"),where("uid","==",currentUser?.uid));
+    const q = query(
+      collection(firestore, "users"),
+      where("uid", "==", currentUser?.uid)
+    );
     const snapshot = await getDocs(q);
     const data = snapshot.docs.map((doc) => ({
       ...doc.data(),
@@ -53,6 +56,11 @@ const JobsPosted = () => {
 
   useEffect(() => {
     fetchJobsPosted();
+
+    if (!currentUser) {
+      router.push("/login");
+      return;
+    }
   }, []);
 
   if (isLoading) {
@@ -67,7 +75,7 @@ const JobsPosted = () => {
 
   return (
     <>
-    <Head>
+      <Head>
         <title>Jobs Posted | Find Jobs</title>
         <meta
           name="description"
@@ -79,7 +87,11 @@ const JobsPosted = () => {
         {postedJobs?.length > 0 && (
           <>
             <div className="min-h-screen bg-gray-200 py-10 px-2 md:px-48">
-            {postedJobs?.length >0 && (<h1 className="mb-5 text-3xl font-medium">Total jobs Posted:{" "} {postedJobs?.length}</h1>)}
+              {postedJobs?.length > 0 && (
+                <h1 className="mb-5 text-3xl font-medium">
+                  Total jobs Posted: {postedJobs?.length}
+                </h1>
+              )}
               <div className=" bg-white border border-gray-300 rounded-md mx-1">
                 {postedJobs &&
                   postedJobs?.map((job) => (
@@ -134,8 +146,7 @@ const JobsPosted = () => {
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                         <p className="text-green-700 font-semibold">
                           {job?.date_posted &&
-                            `Job Posted on: ` +
-                            `${job?.date_posted}`}
+                            `Job Posted on: ` + `${job?.date_posted}`}
                           <small className="font-normal text-black">
                             (On Company site)
                           </small>

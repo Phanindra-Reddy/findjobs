@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import dynamic from "next/dynamic";
 import { v4 as uuidv4 } from "uuid";
-import { notifyError, notifySuccess } from "../utils/toasters";
+import { notifyError, notifySuccess } from "../../../utils/toasters";
 import { useRouter } from "next/router";
-import { useAuth } from "../hooks/AuthContext";
+import { useAuth } from "../../../hooks/AuthContext";
 import moment from "moment";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { firestore } from "../utils/firebase";
+import { firestore } from "../../../utils/firebase";
 import {
   collection,
   addDoc,
@@ -40,25 +40,76 @@ const modules = {
   ],
 };
 
-const PostHiringDrive = () => {
+const EditDrive = () => {
   const currentTime = new Date().toLocaleString("en-Us", {
     timeZone: "Asia/Kolkata",
   });
   const router = useRouter();
+  const { driveID } = router.query;
   const { currentUser } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
-
-  const [newDrive, setNewDrive] = useState({
+  const [eligibility, setEligibility] = useState("");
+  const [skills, setSkills] = useState("");
+  const [editDrive, setEditDrive] = useState({
     title: "",
     company_name: "",
     role: "",
     apply_link: "",
     experience: "",
     location: "",
-    date_posted: "",
+    date_posted: new Date(),
     eligibility: "",
     skills_required: "",
   });
+
+  const fetchDocument = async () => {
+    setIsLoading(true);
+
+    try {
+      const q = query(
+        collection(firestore, "users"),
+        where("uid", "==", currentUser?.uid)
+      );
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      data.map(async (elem) => {
+        const workQ = query(collection(firestore, `users/${elem.id}/drives`));
+        const workDetails = await getDocs(workQ);
+        const workInfo = workDetails.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        let drive_details = workInfo?.filter(
+          (drive) => drive?.id === driveID[0]
+        );
+
+        setEditDrive({
+          title: drive_details[0]?.title,
+          company_name: drive_details[0]?.company_name,
+          role: drive_details[0]?.role,
+          apply_link: drive_details[0]?.apply_link,
+          experience: drive_details[0]?.experience,
+          location: drive_details[0]?.location,
+          date_posted: drive_details[0]?.date_posted,
+        });
+        setEligibility(drive_details[0]?.eligibility);
+        setSkills(drive_details[0]?.skills_required);
+      });
+    } catch (error) {
+      console.log(error.messgae);
+      notifyError(`${error.messgae}`);
+    }
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchDocument();
+  }, [driveID]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -83,71 +134,67 @@ const PostHiringDrive = () => {
     }
   }
 
-  const postahiringdrive = async (e) => {
+  const updateDrive = async (e) => {
     e.preventDefault();
 
     setIsUpdate(true);
 
-    const q = query(
-      collection(firestore, "users"),
-      where("uid", "==", currentUser?.uid)
-    );
-    const docs = await getDocs(q);
+    try {
+      const q = query(
+        collection(firestore, "users"),
+        where("uid", "==", currentUser?.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      let docID = "";
+      querySnapshot.forEach((doc) => {
+        docID = doc.id;
+      });
 
-    let driveId = uuidv4();
-
-    docs?.docs?.map(async (v) => {
-      await setDoc(doc(firestore, `users/${v.id}/drives`, driveId), {
-        id: driveId,
-        title: newDrive?.title,
-        company_name: newDrive?.company_name,
-        role: newDrive?.role,
-        apply_link: newDrive?.apply_link,
-        experience: newDrive?.experience,
-        location: newDrive?.location,
-        date_posted: newDrive?.date_posted,
-        eligibility: newDrive?.eligibility,
-        skills_required: newDrive?.skills_required,
-        posted_by: currentUser?.email?.split("@")[0],
-        createdAt: currentTime,
+      const docRef = doc(firestore, `users/${docID}/drives/${driveID}`);
+      updateDoc(docRef, {
+        id: driveID,
+        company_name: editDrive?.company_name,
+        role: editDrive?.role,
+        apply_link: editDrive?.apply_link,
+        experience: editDrive?.experience,
+        location: editDrive?.location,
+        date_posted: editDrive?.date_posted,
+        eligibility: eligibility,
+        skills_required: skills,
         updatedAt: currentTime,
       });
-    });
+    } catch (error) {
+      console.log(error.messgae);
+      notifyError(`${error.messgae}`);
+    }
 
     setIsUpdate(false);
-    notifySuccess("Hiring Drive added successfully.");
-    router.push("/");
-    setNewDrive({
-      title: "",
-      company_name: "",
-      role: "",
-      apply_link: "",
-      experience: "",
-      location: "",
-      date_posted: new Date(),
-      eligibility: "",
-      skills_required: "",
-    });
+    notifySuccess("Hiring drive updated successfully.");
+    router.push("/hiring-drives-posted");
   };
 
   const onEditorDescriptionStateChange = (value) => {
-    setNewDrive({
-      ...newDrive,
-      skills_required: value,
-    });
+    setSkills(value);
   };
 
   const onEditorEligibilityStateChange = (value) => {
-    setNewDrive({
-      ...newDrive,
-      eligibility: value,
-    });
+    setEligibility(value);
   };
+
+  if (isLoading) {
+    return (
+      <>
+        <div className="h-screen flex items-center justify-center">
+          <h1 className="text-3xl font-medium">Loading...</h1>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
       <Head>
-        <title>Post a Hiring Drive | Find Jobs</title>
+        <title>Edit Hiring Drive | Find Jobs</title>
         <meta
           name="description"
           content="Find Jobs is online job finding portal. Developed and Designed by Phanindra Reddy."
@@ -156,16 +203,17 @@ const PostHiringDrive = () => {
       </Head>
       <div className="md:mx-10 mb-10">
         <h1 className="text-center my-5 text-3xl font-medium underline text-blue-700">
-          Post a Hiring Drive
+          Edit Hiring Drive
         </h1>
         <h1 className="text-xl font-medium ml-5 mt-5">
           Hi {currentUser ? currentUser?.displayName : "Guest"}
           {generateGreetings()}
         </h1>
+
         <div>
           <div className="mt-10 sm:mt-0">
             <div className="mt-5">
-              <form onSubmit={postahiringdrive}>
+              <form onSubmit={updateDrive}>
                 <div className="shadow overflow-hidden sm:rounded-md">
                   <div className="px-4 py-5 bg-white sm:p-6">
                     <div className="grid grid-cols-6 gap-6">
@@ -183,10 +231,10 @@ const PostHiringDrive = () => {
                             name="title"
                             className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                             placeholder="COGNIZANT IS HIRING: 2019/2020/2021/2022"
-                            value={newDrive?.title}
+                            value={editDrive?.title}
                             onChange={(e) =>
-                              setNewDrive({
-                                ...newDrive,
+                              setEditDrive({
+                                ...editDrive,
                                 title: e.target.value,
                               })
                             }
@@ -209,10 +257,10 @@ const PostHiringDrive = () => {
                           autoComplete="given-name"
                           className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md "
                           required
-                          value={newDrive?.company_name}
+                          value={editDrive?.company_name}
                           onChange={(e) =>
-                            setNewDrive({
-                              ...newDrive,
+                            setEditDrive({
+                              ...editDrive,
                               company_name: e.target.value,
                             })
                           }
@@ -234,10 +282,10 @@ const PostHiringDrive = () => {
                           autoComplete="family-name"
                           className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                           required
-                          value={newDrive?.role}
+                          value={editDrive?.role}
                           onChange={(e) =>
-                            setNewDrive({
-                              ...newDrive,
+                            setEditDrive({
+                              ...editDrive,
                               role: e.target.value,
                             })
                           }
@@ -259,10 +307,10 @@ const PostHiringDrive = () => {
                           autoComplete="family-name"
                           className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                           required
-                          value={newDrive?.apply_link}
+                          value={editDrive?.apply_link}
                           onChange={(e) =>
-                            setNewDrive({
-                              ...newDrive,
+                            setEditDrive({
+                              ...editDrive,
                               apply_link: e.target.value,
                             })
                           }
@@ -284,10 +332,10 @@ const PostHiringDrive = () => {
                           autoComplete="family-name"
                           className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                           required
-                          value={newDrive?.experience}
+                          value={editDrive?.experience}
                           onChange={(e) =>
-                            setNewDrive({
-                              ...newDrive,
+                            setEditDrive({
+                              ...editDrive,
                               experience: e.target.value,
                             })
                           }
@@ -309,10 +357,10 @@ const PostHiringDrive = () => {
                           autoComplete="family-name"
                           className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                           required
-                          value={newDrive?.location}
+                          value={editDrive?.location}
                           onChange={(e) =>
-                            setNewDrive({
-                              ...newDrive,
+                            setEditDrive({
+                              ...editDrive,
                               location: e.target.value,
                             })
                           }
@@ -326,15 +374,30 @@ const PostHiringDrive = () => {
                         >
                           Date Posted
                         </label>
+                        <input
+                          type="text"
+                          name="date-posted"
+                          id="date-posted"
+                          autoComplete="address-level2"
+                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                          required
+                          value={editDrive?.date_posted}
+                          onChange={(e) =>
+                            setEditDrive({
+                              ...editDrive,
+                              date_posted: e.target.value,
+                            })
+                          }
+                        />
 
                         {/* <DatePicker
                           name="date-posted"
                           id="date-posted"
                           className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          selected={newDrive?.date_posted}
+                          selected={editDrive?.date_posted}
                           onChange={(date) =>
-                            setNewDrive({
-                              ...newDrive,
+                            setEditDrive({
+                              ...editDrive,
                               date_posted: date,
                             })
                           }
@@ -344,22 +407,6 @@ const PostHiringDrive = () => {
                           timeCaption="time"
                           dateFormat="MMMM d, yyyy h:mm aa"
                         /> */}
-                        <input
-                          type="text"
-                          name="date-posted"
-                          id="date-posted"
-                          autoComplete="address-level2"
-                          placeholder="11/08/2022 or August 08, 2022"
-                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          required
-                          value={newDrive?.date_posted}
-                          onChange={(e) =>
-                            setNewDrive({
-                              ...newDrive,
-                              date_posted: e.target.value,
-                            })
-                          }
-                        />
                       </div>
 
                       <div className="col-span-6 sm:col-span-6 lg:col-span-6">
@@ -371,9 +418,9 @@ const PostHiringDrive = () => {
                         </label>
                         <div className="mt-1">
                           <ReactQuill
-                            placeholder="Write job description here..."
+                            placeholder="Write eligibility here..."
                             theme="snow"
-                            value={newDrive?.eligibility}
+                            value={eligibility}
                             onChange={onEditorEligibilityStateChange}
                             modules={modules}
                           />
@@ -389,9 +436,9 @@ const PostHiringDrive = () => {
                         </label>
                         <div className="mt-1">
                           <ReactQuill
-                            placeholder="Write job description here..."
+                            placeholder="Write skills required and description here..."
                             theme="snow"
-                            value={newDrive?.skills_required}
+                            value={skills}
                             onChange={onEditorDescriptionStateChange}
                             modules={modules}
                           />
@@ -426,10 +473,10 @@ const PostHiringDrive = () => {
                               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                             ></path>
                           </svg>
-                          Posting a hiring drive...
+                          Updating hiring drive...
                         </>
                       ) : (
-                        <>Post a Hiring Drive</>
+                        <>Update Hiring Drive</>
                       )}
                     </button>
                   </div>
@@ -438,13 +485,9 @@ const PostHiringDrive = () => {
             </div>
           </div>
         </div>
-
-        {/* <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <h1 className="text-center text-3xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">Coming Soon...</h1>
-        </div> */}
       </div>
     </>
   );
 };
 
-export default PostHiringDrive;
+export default EditDrive;
