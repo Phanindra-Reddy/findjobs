@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useAuth } from "../../../hooks/AuthContext";
 import { firestore } from "../../../utils/firebase";
 import {
+  collectionGroup,
   collection,
   query,
   getDocs,
@@ -23,34 +24,51 @@ const ViewDrive = () => {
   const { driveID } = router.query;
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false);
   const [filteredDrive, setFilteredDrive] = useState([]);
 
   const fetchDocument = async () => {
+    // setIsLoading(true);
+
+    // try {
+    //   const q = query(
+    //     collection(firestore, "users"),
+    //     where("uid", "==", currentUser?.uid)
+    //   );
+    //   const snapshot = await getDocs(q);
+    //   const data = snapshot.docs.map((doc) => ({
+    //     ...doc.data(),
+    //     id: doc.id,
+    //   }));
+    //   data.map(async (elem) => {
+    //     const workQ = query(collection(firestore, `users/${elem.id}/drives`));
+    //     const workDetails = await getDocs(workQ);
+    //     const workInfo = workDetails.docs.map((doc) => ({
+    //       ...doc.data(),
+    //       id: doc.id,
+    //     }));
+    //     setFilteredDrive(workInfo);
+    //   });
+    // } catch (error) {
+    //   console.log(error.message);
+    //   notifyError(`${error.message}`);
+    // }
+
+    // setIsLoading(false);
+
     setIsLoading(true);
 
     try {
-      const q = query(
-        collection(firestore, "users"),
-        where("uid", "==", currentUser?.uid)
-      );
-      const snapshot = await getDocs(q);
-      const data = snapshot.docs.map((doc) => ({
+      const res = query(collectionGroup(firestore, "drives"));
+      const res2 = await getDocs(res);
+      const data = res2.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      data.map(async (elem) => {
-        const workQ = query(collection(firestore, `users/${elem.id}/drives`));
-        const workDetails = await getDocs(workQ);
-        const workInfo = workDetails.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setFilteredDrive(workInfo);
-      });
+
+      setFilteredDrive(data);
     } catch (error) {
-      console.log(error.message);
-      notifyError(`${error.message}`);
+      console.log(error.messgae);
+      notifyError(`${error.messgae}`);
     }
 
     setIsLoading(false);
@@ -59,7 +77,6 @@ const ViewDrive = () => {
   useEffect(() => {
     fetchDocument();
   }, []);
-
 
   if (isLoading) {
     return (
@@ -125,9 +142,7 @@ const ViewDrive = () => {
                 </p>
                 <p className="">
                   Date Posted:{" "}
-                  <span className="font-medium">
-                    {drive?.date_posted}
-                  </span>
+                  <span className="font-medium">{drive?.date_posted}</span>
                   <small className="text-red-600">
                     (Date mentioned on company site.)
                   </small>

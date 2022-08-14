@@ -203,7 +203,7 @@ const DriveSearch = () => {
                   <div className="block md:hidden">
                     <button
                       onClick={() =>
-                        router.push(`latest-hiring-drives/view/${drive?.id}`)
+                        router.push(`view/${drive?.id}`)
                       }
                       className="flex items-center justify-center w-full border border-blue-700 hover:bg-blue-700 hover:text-white p-1 my-2 rounded-md"
                     >
