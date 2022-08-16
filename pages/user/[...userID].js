@@ -3,15 +3,27 @@ import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { collection, getDocs, query, where, doc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  setDoc,
+} from "firebase/firestore";
 import { firestore } from "../../utils/firebase";
+import { useAuth } from "../../hooks/AuthContext";
+import ChatRequestLoginModal from "../../components/ChatRequestLoginModal";
+import { v4 as uuidv4 } from "uuid";
 
 const UserProfile = () => {
   const router = useRouter();
   const { userID } = router.query;
+  const { currentUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [userFetchError, setUserFetchError] = useState(false);
   const [user, setUser] = useState();
+  const [openChatLoginModal, setOpenChatLoginModal] = useState(false);
 
   const fetchUser = async () => {
     setIsLoading(true);
@@ -37,6 +49,65 @@ const UserProfile = () => {
     fetchUser();
   }, [userID]);
 
+  const requestForChat = async () => {
+    if (!currentUser) {
+      setOpenChatLoginModal(!openChatLoginModal);
+    }
+
+    const senderQ = query(
+      collection(firestore, "users"),
+      where("username", "==", currentUser?.email?.split("@")[0])
+    );
+    const recieverQ = query(
+      collection(firestore, "users"),
+      where("username", "==", user?.username)
+    );
+
+    const senderDocs = await getDocs(senderQ);
+    const recieverDocs = await getDocs(recieverQ);
+
+    let senderChatId = currentUser?.email;
+    let recieverChatId = user?.email;
+
+    senderDocs?.docs?.map(async (v) => {
+      console.log(v?.id);
+      await setDoc(doc(firestore, `users/${v.id}/chats`, recieverChatId), {
+        to: {
+          id: user?.uid,
+          email: user?.email,
+          name: user?.name,
+          photo: user?.photoURL,
+        },
+        from: {
+          id: currentUser?.uid,
+          email: currentUser?.email,
+          name: currentUser?.displayName,
+          photo: currentUser?.photoURL,
+        },
+      });
+    });
+
+    recieverDocs?.docs?.map(async (v) => {
+      console.log(v?.id);
+      await setDoc(doc(firestore, `users/${v.id}/chats`, senderChatId), {
+        to: {
+          id: currentUser?.uid,
+          email: currentUser?.email,
+          name: currentUser?.displayName,
+          photo: currentUser?.photoURL,
+        },
+        from: {
+          id: user?.uid,
+          email: user?.email,
+          name: user?.name,
+          photo: user?.photoURL,
+        },
+      });
+    });
+
+    router.push(`/chat/${user?.email}`)
+  };
+
   if (isLoading) {
     return (
       <>
@@ -51,12 +122,12 @@ const UserProfile = () => {
     return (
       <>
         <div className="h-screen flex items-center justify-center">
-        <h1 className="text-3xl md:text-5xl">
-          <b className="font-bold font-sans bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-            User not found
-          </b>
-          <span>🙂</span>
-        </h1>
+          <h1 className="text-3xl md:text-5xl">
+            <b className="font-bold font-sans bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
+              User not found
+            </b>
+            <span>🙂</span>
+          </h1>
         </div>
       </>
     );
@@ -74,6 +145,12 @@ const UserProfile = () => {
       </Head>
       <div>
         <div className="border border-slate-200 rounded flex flex-col items-center justify-center py-5 m-2 mt-10 md:m-10">
+          <button
+            onClick={requestForChat}
+            className="hidden md:block bg-blue-600 rounded-md text-white font-medium p-2 px-5 hover:bg-blue-800 absolute md:right-20 md:top-32"
+          >
+            Request Chat
+          </button>
           <div className="rounded-full bg-gray-600 text-white text-5xl md:text-9xl flex items-center justify-center">
             {user?.photoURL ? (
               <>
@@ -172,6 +249,10 @@ const UserProfile = () => {
           )}
         </div>
       </div>
+      <ChatRequestLoginModal
+        openChatLoginModal={openChatLoginModal}
+        setOpenChatLoginModal={setOpenChatLoginModal}
+      />
     </>
   );
 };
