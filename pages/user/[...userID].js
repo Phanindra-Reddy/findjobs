@@ -70,7 +70,6 @@ const UserProfile = () => {
     let recieverChatId = user?.email;
 
     senderDocs?.docs?.map(async (v) => {
-      console.log(v?.id);
       await setDoc(doc(firestore, `users/${v.id}/chats`, recieverChatId), {
         to: {
           id: user?.uid,
@@ -84,11 +83,11 @@ const UserProfile = () => {
           name: currentUser?.displayName,
           photo: currentUser?.photoURL,
         },
+        blockUser: false,
       });
     });
 
     recieverDocs?.docs?.map(async (v) => {
-      console.log(v?.id);
       await setDoc(doc(firestore, `users/${v.id}/chats`, senderChatId), {
         to: {
           id: currentUser?.uid,
@@ -102,10 +101,11 @@ const UserProfile = () => {
           name: user?.name,
           photo: user?.photoURL,
         },
+        blockUser: false,
       });
     });
 
-    router.push(`/chat/${user?.email}`)
+    router.push(`/chat/${user?.email}`);
   };
 
   if (isLoading) {
@@ -145,12 +145,15 @@ const UserProfile = () => {
       </Head>
       <div>
         <div className="border border-slate-200 rounded flex flex-col items-center justify-center py-5 m-2 mt-10 md:m-10">
-          <button
-            onClick={requestForChat}
-            className="hidden md:block bg-blue-600 rounded-md text-white font-medium p-2 px-5 hover:bg-blue-800 absolute md:right-20 md:top-32"
-          >
-            Request Chat
-          </button>
+          {!(currentUser?.email?.split("@")[0] == userID) && (
+            <button
+              onClick={requestForChat}
+              className="hidden md:block bg-blue-600 rounded-md text-white font-medium p-2 px-5 hover:bg-blue-800 absolute md:right-20 md:top-32"
+            >
+              Start Chat
+            </button>
+          )}
+
           <div className="rounded-full bg-gray-600 text-white text-5xl md:text-9xl flex items-center justify-center">
             {user?.photoURL ? (
               <>

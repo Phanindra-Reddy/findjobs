@@ -22,7 +22,7 @@ function Navbar() {
   };
 
   return (
-    <div className="sticky top-0 z-20">
+    <div className="z-20">
       <nav className="bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -116,6 +116,11 @@ function Navbar() {
               </>
             ) : (
               <div className="ml-10 flex items-center space-x-4">
+                <Link href="/chat">
+                  <a className="text-white font-medium rounded-md p-1 md:px-3 md:py-2 hover:underline hidden md:block">
+                    Chat
+                  </a>
+                </Link>
                 <Link href="/post-a-hiring-drive">
                   <a className="text-white font-medium rounded-md p-1 md:px-3 md:py-2 hover:underline hidden md:block">
                     Post a hiring drive
@@ -270,6 +275,16 @@ function Navbar() {
                   className="w-full text-center hover:bg-gray-700 text-white block px-3 py-2 rounded-md text-base font-medium"
                 >
                   Post a Hirirng Drive
+                </button>
+
+                <button
+                  onClick={() => {
+                    router.push("/chat");
+                    setIsOpen(!open);
+                  }}
+                  className="w-full text-center hover:bg-gray-700 text-white block px-3 py-2 rounded-md text-base font-medium"
+                >
+                  Chat Dashboard
                 </button>
 
                 {currentUser ? (

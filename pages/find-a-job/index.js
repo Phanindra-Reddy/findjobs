@@ -87,7 +87,7 @@ const FindAJob = () => {
         <link rel="icon" href="/findjobnavbluewhite.svg" />
       </Head>
       <div className="min-h-screen bg-gray-200">
-        <div className="py-10 md:sticky md:top-10">
+        <div className="py-10 md:sticky -top-10">
           <SearchAJob
             searchParams={searchParams}
             setSearchParams={setSearchParams}
