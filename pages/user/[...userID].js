@@ -54,6 +54,28 @@ const UserProfile = () => {
       setOpenChatLoginModal(!openChatLoginModal);
     }
 
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "selectedChatUser",
+        JSON.stringify({
+          to: {
+            id: user?.uid,
+            email: user?.email,
+            name: user?.name,
+            photo: user?.photoURL,
+          },
+          from: {
+            id: currentUser?.uid,
+            email: currentUser?.email,
+            name: currentUser?.displayName,
+            photo: currentUser?.photoURL,
+          },
+          blockUser: false,
+          id:user?.email,
+        })
+      );
+    }
+
     const senderQ = query(
       collection(firestore, "users"),
       where("username", "==", currentUser?.email?.split("@")[0])
@@ -148,7 +170,7 @@ const UserProfile = () => {
           {!(currentUser?.email?.split("@")[0] == userID) && (
             <button
               onClick={requestForChat}
-              className="hidden md:block bg-blue-600 rounded-md text-white font-medium p-2 px-5 hover:bg-blue-800 absolute md:right-20 md:top-32"
+              className="block bg-blue-600 rounded-md text-white font-medium p-2 px-5 hover:bg-blue-800 absolute right-5 top-20 md:right-20 md:top-32"
             >
               Start Chat
             </button>

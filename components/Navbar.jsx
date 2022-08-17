@@ -22,7 +22,7 @@ function Navbar() {
   };
 
   return (
-    <div className="z-20">
+    <div className="z-20 w-full sticky top-0">
       <nav className="bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -274,7 +274,7 @@ function Navbar() {
                   }}
                   className="w-full text-center hover:bg-gray-700 text-white block px-3 py-2 rounded-md text-base font-medium"
                 >
-                  Post a Hirirng Drive
+                  Post a Hiring Drive
                 </button>
 
                 <button

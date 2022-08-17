@@ -140,6 +140,10 @@ const SingleUserChat = () => {
   const sendMessage = async (e) => {
     e.preventDefault();
 
+    if(msgInput === ""){
+      return;
+    }
+
     const senderQ = query(
       collection(firestore, "users"),
       where("username", "==", currentUser?.email?.split("@")[0])
@@ -242,7 +246,7 @@ const SingleUserChat = () => {
       <div className="flex flex-col h-screen">
         <div className="flex-1">
           <div className="flex flex-row">
-            <div className="hidden lg:block lg:w-1/4 h-screen sticky top-0">
+            <div className="hidden lg:block lg:w-1/4 h-screen sticky top-0 border-r">
               <Scrollbars>
                 <Link href="/">
                   <a className="flex items-center justify-center border-b">
@@ -268,8 +272,8 @@ const SingleUserChat = () => {
                   {chatUsersList?.map((user) => (
                     <li
                       key={user?.id}
-                      className={`p-2 px-5 border-b hover:bg-gray-200 cursor-pointer ${
-                        emailID === user?.to?.email && "bg-slate-200"
+                      className={`p-2 px-5 border-b hover:bg-blue-400 cursor-pointer ${
+                        emailID == user?.to?.email && "bg-slate-200"
                       }`}
                       onClick={() => {
                         if (typeof window !== "undefined") {
@@ -300,7 +304,7 @@ const SingleUserChat = () => {
             </div>
             <div className="w-full lg:w-3/4">
               <div className="border-l">
-                <nav className="border-b p-2 md:p-3 flex items-center justify-between bg-slate-300 z-10 sticky top-0">
+                <nav className="border-b p-2 md:p-3 flex items-center justify-between bg-slate-300 z-10 sticky top-16">
                   {selectedChatUser && (
                     <div>
                       <div className="flex">
@@ -322,9 +326,9 @@ const SingleUserChat = () => {
                       <Menu.Button className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                         <span className="sr-only">Open user menu</span>
 
-                        <button className="text-2xl w-10 h-10 hover:bg-slate-200 rounded-full flex items-center justify-center">
+                        <div className="text-2xl w-10 h-10 hover:bg-slate-200 rounded-full flex items-center justify-center">
                           <BsThreeDots />
-                        </button>
+                        </div>
                       </Menu.Button>
                     </div>
                     <Transition
@@ -336,7 +340,7 @@ const SingleUserChat = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-xl py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <Menu.Item>
                           {({ active }) => (
                             <div
@@ -358,7 +362,7 @@ const SingleUserChat = () => {
                           )}
                         </Menu.Item>
 
-                        {blockedUser ? (
+                        {/* {blockedUser ? (
                           <>
                             <Menu.Item>
                               {({ active }) => (
@@ -392,7 +396,7 @@ const SingleUserChat = () => {
                               )}
                             </Menu.Item>
                           </>
-                        )}
+                        )} */}
                         {/* {({ active }) => (
                             <div
                               onClick={blockUser}
@@ -410,7 +414,7 @@ const SingleUserChat = () => {
                   </Menu>
                 </nav>
                 <div className={`p-4 md:mx-5  mb-14 flex flex-col`}>
-                  {/* {messages &&
+                  {messages &&
                     messages?.map((msg) => (
                       <p
                         key={msg?.id}
@@ -422,9 +426,9 @@ const SingleUserChat = () => {
                       >
                         {msg?.text}
                       </p>
-                    ))} */}
+                    ))}
 
-                  {blockedUser ? (
+                  {/* {blockedUser ? (
                     <div className="flex flex-col items-center justify-center relative top-28">
                       <h1 className="text-center font-medium text-5xl mb-12">
                         Sorry:)
@@ -448,7 +452,7 @@ const SingleUserChat = () => {
                         {msg?.text}
                       </p>
                     ))
-                  )}
+                  )} */}
                   <div ref={bottomOfChat}></div>
                 </div>
 
