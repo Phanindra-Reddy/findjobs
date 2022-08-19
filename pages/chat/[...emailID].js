@@ -304,7 +304,7 @@ const SingleUserChat = () => {
             </div>
             <div className="w-full lg:w-3/4">
               <div className="border-l">
-                <nav className="border-b p-2 md:p-3 flex items-center justify-between bg-slate-300 z-10 sticky top-16">
+                <nav className="border-b p-2 md:p-3 flex items-center justify-between bg-slate-300 z-10 sticky top-0">
                   {selectedChatUser && (
                     <div>
                       <div className="flex">
