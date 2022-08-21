@@ -1,9 +1,15 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import React, { Fragment, useState, useEffect, useRef } from "react";
+import React, {
+  Fragment,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import { useAuth } from "../../hooks/AuthContext";
-import { BsThreeDots } from "react-icons/bs";
+import { BsImage, BsThreeDots } from "react-icons/bs";
 import { BiSend } from "react-icons/bi";
 import { useRouter } from "next/router";
 import {
@@ -16,13 +22,14 @@ import {
   setDoc,
   orderBy,
   serverTimestamp,
-  querySnapshot,
 } from "firebase/firestore";
 import { firestore } from "../../utils/firebase";
 import { v4 as uuidv4 } from "uuid";
 import ChatSideNav from "../../components/ChatSideNav";
 import { Scrollbars } from "react-custom-scrollbars-2";
 import { Menu, Transition } from "@headlessui/react";
+import { notifyInfo } from "../../utils/toasters";
+import useStorage from "../../hooks/useStorage";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -36,11 +43,35 @@ const SingleUserChat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [chatUsersList, setChatUsersList] = useState([]);
   const [selectedChatUser, setSelectedChatUser] = useState();
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(null);
   const [msgInput, setMsgInput] = useState("");
+  const [image, setImage] = useState(null);
   const [blockedUser, setBlockedUser] = useState();
 
+  const { url, progress } = useStorage(
+    image,
+    currentUser,
+    selectedChatUser,
+    emailID
+  );
+
   const bottomOfChat = useRef();
+
+  const fetchUserId = useCallback(async () => {
+    const q = query(
+      collection(firestore, "users"),
+      where("uid", "==", currentUser?.uid)
+    );
+    const snapshot = await getDocs(q);
+    const data = snapshot.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+
+    const userID = data[0]?.id;
+
+    return userID;
+  }, [currentUser?.uid]);
 
   const fetchAllCurrentUserChats = async () => {
     setIsLoading(true);
@@ -70,46 +101,23 @@ const SingleUserChat = () => {
   };
 
   const fetchMessages = async () => {
-    const q = query(
-      collection(firestore, "users"),
-      where("uid", "==", currentUser?.uid)
+    const userID = await fetchUserId();
+    const chatQ = query(
+      collection(firestore, `users/${userID}/chats/${emailID}/messages`),
+      orderBy("timestamp")
     );
-    const snapshot = await getDocs(q);
-    const data = snapshot.docs.map((doc) => ({
+
+    const ChatDetails = await getDocs(chatQ);
+    const data = ChatDetails?.docs?.map((doc) => ({
       ...doc.data(),
-      id: doc.id,
+      id: doc?.id,
     }));
-
-    data?.map(async (item) => {
-      const chatQ = query(
-        collection(firestore, `users/${item.id}/chats/${emailID}/messages`),
-        orderBy("timestamp")
-      );
-
-      const block_user = query(collection(firestore, `users/${item.id}/chats`));
-
-      const blockedUser = await getDocs(block_user);
-      const blockedUserDetails = blockedUser?.docs?.map((doc) => ({
-        ...doc.data(),
-      }));
-      const filterCurrentChatUser = blockedUserDetails?.filter(
-        (user) => user?.to?.email == emailID
-      );
-
-      setBlockedUser(filterCurrentChatUser[0]?.blockUser);
-
-      const ChatDetails = await getDocs(chatQ);
-      const allChatMessages = ChatDetails?.docs?.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setMessages(allChatMessages);
-    });
+    setMessages(data);
   };
 
   useEffect(() => {
     fetchAllCurrentUserChats();
-
+    fetchMessages();
     if (!currentUser) {
       router.push("/login");
       return;
@@ -127,7 +135,7 @@ const SingleUserChat = () => {
   }, [emailID]);
 
   useEffect(() => {
-    fetchMessages();
+    fetchMessages()
     setTimeout(
       bottomOfChat.current?.scrollIntoView({
         behavior: "smooth",
@@ -140,7 +148,7 @@ const SingleUserChat = () => {
   const sendMessage = async (e) => {
     e.preventDefault();
 
-    if(msgInput === ""){
+    if (msgInput === "") {
       return;
     }
 
@@ -157,35 +165,61 @@ const SingleUserChat = () => {
     const recieverDocs = await getDocs(recieverQ);
     let msgID = uuidv4();
 
-    senderDocs?.docs?.map(async (v) => {
-      await setDoc(
-        doc(firestore, `users/${v.id}/chats/${emailID}/messages`, msgID),
-        {
-          text: msgInput,
-          sender: currentUser?.email,
-          reciever: selectedChatUser?.to?.email,
-          timestamp: serverTimestamp(),
-        }
-      );
-    });
+    const getSenderID = senderDocs.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
 
-    recieverDocs?.docs?.map(async (v) => {
-      await setDoc(
-        doc(
-          firestore,
-          `users/${v.id}/chats/${selectedChatUser?.from?.email}/messages`,
-          msgID
-        ),
-        {
-          text: msgInput,
-          sender: selectedChatUser?.from?.email,
-          reciever: selectedChatUser?.to?.email,
-          timestamp: serverTimestamp(),
-        }
-      );
-    });
-    //fetchMessages();
+    const getRecieverID = recieverDocs.docs.map((doc) => ({
+      ...doc.data(),
+      id: doc.id,
+    }));
+
+    let senderID = getSenderID[0]?.id;
+    let recieverID = getRecieverID[0]?.id;
+
+    await setDoc(
+      doc(firestore, `users/${senderID}/chats/${emailID}/messages`, msgID),
+      {
+        text: msgInput,
+        sender: currentUser?.email,
+        reciever: selectedChatUser?.to?.email,
+        timestamp: serverTimestamp(),
+        image: "",
+        isImage: false,
+      }
+    );
+
+    await setDoc(
+      doc(
+        firestore,
+        `users/${recieverID}/chats/${selectedChatUser?.from?.email}/messages`,
+        msgID
+      ),
+      {
+        text: msgInput,
+        sender: selectedChatUser?.from?.email,
+        reciever: selectedChatUser?.to?.email,
+        timestamp: serverTimestamp(),
+        image: "",
+        isImage: false,
+      }
+    );
+
     setMsgInput("");
+  };
+
+
+  const uploadImage = (e) => {
+    const types = ["image/png", "image/jpeg"];
+    let selected = e.target.files[0];
+    if (selected && types.includes(selected.type)) {
+      setImage(selected);
+    } else {
+      notifyInfo("Please select an image file (png or jpeg)");
+      setImage(null);
+      return;
+    }
   };
 
   const blockUser = async () => {
@@ -424,7 +458,22 @@ const SingleUserChat = () => {
                             : "bg-blue-200 self-start"
                         }`}
                       >
-                        {msg?.text}
+                        {msg?.isImage ? (
+                          <>
+                            <Link href={msg?.image}>
+                              <a target="_blank">
+                                <Image
+                                  src={msg?.image}
+                                  alt="chat-image"
+                                  height={150}
+                                  width={280}
+                                />
+                              </a>
+                            </Link>
+                          </>
+                        ) : (
+                          msg?.text
+                        )}
                       </p>
                     ))}
 
@@ -457,25 +506,53 @@ const SingleUserChat = () => {
                 </div>
 
                 {!blockedUser && (
-                  <div className="bg-gray-200 p-3 w-full lg:w-3/4 fixed bottom-0">
-                    <form className="flex" onSubmit={sendMessage}>
-                      <input
-                        type="text"
-                        placeholder="Type message..."
-                        className="focus:ring-indigo-500 focus:border-indigo-500 hover:border-slate-700 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                        value={msgInput}
-                        onChange={(e) => setMsgInput(e.target.value)}
-                        autoComplete="off"
-                      />
-                      <button
-                        type="submit"
-                        className="flex items-center ml-5 text-lg bg-blue-600 hover:bg-blue-800 text-white rounded px-2 py-1"
+                  <>
+                    <div
+                      className={`bg-gray-200 p-3 w-full lg:w-3/4 fixed bottom-0 ${
+                        progress > 0 && "border-t-8 border-purple-500"
+                      }`}
+                    >
+                      <form
+                        className="flex items-center"
+                        onSubmit={sendMessage}
                       >
-                        <BiSend />
-                        <p className="ml-2 font-medium">Send</p>
-                      </button>
-                    </form>
-                  </div>
+                        <div className="flex mr-5">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={uploadImage}
+                            className="hidden"
+                            id="icon-button-file"
+                          />
+                          <label htmlFor="icon-button-file">
+                            <span
+                              aria-label="upload picture"
+                              className="text-3xl cursor-pointer"
+                            >
+                              <BsImage />
+                            </span>
+                          </label>
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="Type message..."
+                          className="focus:ring-indigo-500 focus:border-indigo-500 hover:border-slate-700 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                          value={msgInput}
+                          onChange={(e) => setMsgInput(e.target.value)}
+                          autoComplete="off"
+                        />
+                        <button
+                          type="submit"
+                          className="flex items-center ml-5 text-lg bg-blue-600 hover:bg-blue-800 text-white rounded px-3 md:px-2 py-2 md:py-1"
+                        >
+                          <BiSend />
+                          <p className="ml-2 font-medium hidden md:block">
+                            Send
+                          </p>
+                        </button>
+                      </form>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
