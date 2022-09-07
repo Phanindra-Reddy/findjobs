@@ -118,8 +118,8 @@ const JobSearch = () => {
                               <Image
                                 src={job?.company_logo}
                                 alt={job?.company_name}
-                                width={100}
-                                height={100}
+                                width={128}
+                                height={128}
                               />
                             </>
                           ) : (
@@ -127,8 +127,8 @@ const JobSearch = () => {
                               <Image
                                 src="/company_fake_logo.webp"
                                 alt={job?.company_name}
-                                width={100}
-                                height={100}
+                                width={128}
+                                height={128}
                               />
                             </>
                           )}

@@ -100,67 +100,70 @@ const HiringDrivesPosted = () => {
                     key={drive?.id}
                     className="group bg-white border border-gray-300 rounded-sm mb-5 p-5"
                   >
-                    <Link href={`hiring-drives-posted/view/${drive?.id}`}>
-                      <a>
-                        <div className="flex items-center justify-between">
-                          {/* <h1 className="text-2xl font-medium text-blue-700 hover:underline">
+                    <div className="flex items-center justify-between">
+                      {/* <h1 className="text-2xl font-medium text-blue-700 hover:underline">
                             {drive?.title}
                           </h1> */}
-                          <div className="flex items-center">
-                            <div className="mr-5">
-                              {drive.company_logo ? (
-                                <>
-                                  <Image
-                                    src={drive?.company_logo}
-                                    alt={drive?.company_name}
-                                    width={100}
-                                    height={100}
-                                  />
-                                </>
-                              ) : (
-                                <>
-                                  <Image
-                                    src="/company_fake_logo.webp"
-                                    alt={drive?.company_name}
-                                    width={100}
-                                    height={100}
-                                  />
-                                </>
-                              )}
-                            </div>
-                            <div>
+                      <div className="flex items-center">
+                        <div className="mr-5">
+                          {drive.company_logo ? (
+                            <>
+                              <Image
+                                src={drive?.company_logo}
+                                alt={drive?.company_name}
+                                width={128}
+                                height={128}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <Image
+                                src="/company_fake_logo.webp"
+                                alt={drive?.company_name}
+                                width={128}
+                                height={128}
+                              />
+                            </>
+                          )}
+                        </div>
+                        <div>
+                          <Link href={`hiring-drives-posted/view/${drive?.id}`}>
+                            <a>
                               <h1 className="text-2xl font-medium text-blue-700 hover:underline">
                                 {drive?.title}
                               </h1>
-                              <p>{drive?.company_name}</p>
-                            </div>
-                          </div>
-                          <div className="hidden md:flex items-center">
-                            <button
-                              onClick={() =>
-                                router.push(
-                                  `hiring-drives-posted/view/${drive?.id}`
-                                )
-                              }
-                              className="hidden group-hover:block"
-                            >
-                              <BsFillEyeFill className="h-6 w-6 mr-16" />
-                            </button>
-                            <button
-                              onClick={() =>
-                                router.push(
-                                  `hiring-drives-posted/edit/${drive?.id}`
-                                )
-                              }
-                              className="hidden group-hover:block"
-                            >
-                              <FaEdit className="h-6 w-6" />
-                            </button>
-                          </div>
+                            </a>
+                          </Link>
+                          <p>{drive?.company_name}</p>
                         </div>
-                      </a>
-                    </Link>
-                    <p>Date Posted:{" "}{drive?.date_posted}</p>
+                      </div>
+                      <div className="hidden md:flex items-center">
+                        <button
+                          onClick={() =>
+                            router.push(
+                              `hiring-drives-posted/view/${drive?.id}`
+                            )
+                          }
+                          className="hidden group-hover:block"
+                        >
+                          <BsFillEyeFill className="h-6 w-6 mr-5" />
+                        </button>
+                        <button
+                          onClick={() =>
+                            router.push(
+                              router.push(
+                                `hiring-drives-posted/edit/${drive?.id}`
+                              )
+                            )
+                          }
+                          className="hidden group-hover:block"
+                        >
+                          <FaEdit className="h-6 w-6" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <p>Date Posted: {drive?.date_posted}</p>
                     <div className="flex md:hidden items-center justify-between mt-5">
                       <button
                         onClick={() =>

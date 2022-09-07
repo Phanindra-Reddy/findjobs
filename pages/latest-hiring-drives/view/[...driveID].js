@@ -115,8 +115,8 @@ const ViewDrive = () => {
                         <Image
                           src={drive?.company_logo}
                           alt={drive?.company_name}
-                          width={100}
-                          height={100}
+                          width={128}
+                          height={128}
                         />
                       </>
                     ) : (
@@ -124,8 +124,8 @@ const ViewDrive = () => {
                         <Image
                           src="/company_fake_logo.webp"
                           alt={drive?.company_name}
-                          width={100}
-                          height={100}
+                          width={128}
+                          height={128}
                         />
                       </>
                     )}

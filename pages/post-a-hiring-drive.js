@@ -24,6 +24,7 @@ import {
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
+import Image from "next/image";
 
 const modules = {
   toolbar: [
@@ -51,6 +52,7 @@ const PostHiringDrive = () => {
   const [newDrive, setNewDrive] = useState({
     title: "",
     company_name: "",
+    company_url: "",
     role: "",
     apply_link: "",
     experience: "",
@@ -101,6 +103,8 @@ const PostHiringDrive = () => {
         id: driveId,
         title: newDrive?.title,
         company_name: newDrive?.company_name,
+        company_url: newDrive?.company_url,
+        company_logo: `https://logo.clearbit.com/:${newDrive?.company_url}`,
         role: newDrive?.role,
         apply_link: newDrive?.apply_link,
         experience: newDrive?.experience,
@@ -120,6 +124,8 @@ const PostHiringDrive = () => {
     setNewDrive({
       title: "",
       company_name: "",
+      company_url: "",
+      company_logo: "",
       role: "",
       apply_link: "",
       experience: "",
@@ -214,6 +220,31 @@ const PostHiringDrive = () => {
                             setNewDrive({
                               ...newDrive,
                               company_name: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div className="col-span-6 sm:col-span-3">
+                        <label
+                          htmlFor="company_url"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Company Url
+                        </label>
+                        <input
+                          type="text"
+                          name="company_url"
+                          id="company_url"
+                          placeholder="https://www.google.com"
+                          autoComplete="family-name"
+                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                          required
+                          value={newDrive?.company_url}
+                          onChange={(e) =>
+                            setNewDrive({
+                              ...newDrive,
+                              company_url: e.target.value,
                             })
                           }
                         />
@@ -397,6 +428,42 @@ const PostHiringDrive = () => {
                           />
                         </div>
                       </div>
+
+                      <div className="col-span-6 sm:col-span-6 lg:col-span-6 mt-2">
+                        <label
+                          htmlFor="company_logo"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Company Logo
+                        </label>
+                        <div className="py-5">
+                          {newDrive?.company_url ? (
+                            <>
+                              <Image
+                                src={`https://logo.clearbit.com/:${newDrive?.company_url}`}
+                                alt="findjob"
+                                width={100}
+                                height={100}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <Image
+                                src="/company_fake_logo.webp"
+                                alt="findjob"
+                                width={100}
+                                height={100}
+                              />
+                            </>
+                          )}
+                        </div>
+                        <small className="break-words">
+                          company logo will be shown automatically based on
+                          company url. If logo is not showing then it is our
+                          fault, but we will show a default logo.
+                        </small>
+                      </div>
+
                     </div>
                   </div>
                   <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">

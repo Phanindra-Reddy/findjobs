@@ -21,6 +21,7 @@ import {
 import moment from "moment";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
+import Image from "next/image";
 
 const modules = {
   toolbar: [
@@ -48,6 +49,7 @@ const PostaJob = () => {
   const [newJob, setNewJob] = useState({
     company_name: "",
     company_url: "",
+    company_logo: "",
     role: "",
     apply_link: "",
     experience: "",
@@ -100,6 +102,7 @@ const PostaJob = () => {
         id: jobID,
         company_name: newJob?.company_name,
         company_url: newJob?.company_url,
+        company_logo: `https://logo.clearbit.com/:${newJob?.company_url}`,
         role: newJob?.role,
         apply_link: newJob?.apply_link,
         experience: newJob?.experience,
@@ -121,6 +124,7 @@ const PostaJob = () => {
     setNewJob({
       company_name: "",
       company_url: "",
+      company_logo: "",
       role: "",
       apply_link: "",
       experience: "",
@@ -139,6 +143,8 @@ const PostaJob = () => {
       description: value,
     });
   };
+
+  console.log(newJob?.company_url);
 
   return (
     <>
@@ -476,6 +482,41 @@ const PostaJob = () => {
                             software, itjobs)
                           </small>
                         </div>
+
+                        <div className="col-span-6 sm:col-span-6 lg:col-span-6 mt-2">
+                          <label
+                            htmlFor="company_logo"
+                            className="block text-sm font-medium text-gray-700"
+                          >
+                            Company Logo
+                          </label>
+                          <div className="py-5">
+                            {newJob?.company_url ? (
+                              <>
+                                <Image
+                                  src={`https://logo.clearbit.com/:${newJob?.company_url}`}
+                                  alt="findjob"
+                                  width={100}
+                                  height={100}
+                                />
+                              </>
+                            ) : (
+                              <>
+                                <Image
+                                  src="/company_fake_logo.webp"
+                                  alt="findjob"
+                                  width={100}
+                                  height={100}
+                                />
+                              </>
+                            )}
+                          </div>
+                          <small className="break-words">
+                            company logo will be shown automatically based on company
+                            url. If logo is not showing then it is our fault, but we will show a default logo.
+                          </small>
+                        </div>
+
                         <div className="mt-1"></div>
                       </div>
                     </div>

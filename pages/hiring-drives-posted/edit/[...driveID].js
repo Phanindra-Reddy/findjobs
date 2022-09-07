@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { v4 as uuidv4 } from "uuid";
 import { notifyError, notifySuccess } from "../../../utils/toasters";
@@ -54,6 +55,8 @@ const EditDrive = () => {
   const [editDrive, setEditDrive] = useState({
     title: "",
     company_name: "",
+    company_url:"",
+    company_logo:"",
     role: "",
     apply_link: "",
     experience: "",
@@ -90,6 +93,8 @@ const EditDrive = () => {
         setEditDrive({
           title: drive_details[0]?.title,
           company_name: drive_details[0]?.company_name,
+          company_url: drive_details[0]?.company_url,
+          company_logo: drive_details[0]?.company_logo,
           role: drive_details[0]?.role,
           apply_link: drive_details[0]?.apply_link,
           experience: drive_details[0]?.experience,
@@ -153,7 +158,10 @@ const EditDrive = () => {
       const docRef = doc(firestore, `users/${docID}/drives/${driveID}`);
       updateDoc(docRef, {
         id: driveID,
+        title:editDrive?.title,
         company_name: editDrive?.company_name,
+        company_url: editDrive?.company_url,
+        company_logo:`https://logo.clearbit.com/:${editDrive?.company_url}`,
         role: editDrive?.role,
         apply_link: editDrive?.apply_link,
         experience: editDrive?.experience,
@@ -262,6 +270,31 @@ const EditDrive = () => {
                             setEditDrive({
                               ...editDrive,
                               company_name: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div className="col-span-6 sm:col-span-3">
+                        <label
+                          htmlFor="company_url"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Company Url
+                        </label>
+                        <input
+                          type="text"
+                          name="company_url"
+                          id="company_url"
+                          placeholder="https://www.google.com"
+                          autoComplete="family-name"
+                          className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                          required
+                          value={editDrive?.company_url}
+                          onChange={(e) =>
+                            setEditDrive({
+                              ...editDrive,
+                              company_url: e.target.value,
                             })
                           }
                         />
@@ -444,6 +477,43 @@ const EditDrive = () => {
                           />
                         </div>
                       </div>
+
+                      <div className="col-span-6 sm:col-span-6 lg:col-span-6 mt-2">
+                        <label
+                          htmlFor="company_logo"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Company Logo
+                        </label>
+                        <div className="py-5">
+                          {editDrive?.company_url ? (
+                            <>
+                              <Image
+                                src={`https://logo.clearbit.com/:${editDrive?.company_url}`}
+                                alt="findjob"
+                                width={100}
+                                height={100}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <Image
+                                src="/company_fake_logo.webp"
+                                alt="findjob"
+                                width={100}
+                                height={100}
+                              />
+                            </>
+                          )}
+                        </div>
+                        <small className="break-words">
+                          company logo will be shown automatically based on
+                          company url. If logo is not showing then it is our
+                          fault, but we will show a default logo.
+                        </small>
+                      </div>
+
+
                     </div>
                   </div>
                   <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
