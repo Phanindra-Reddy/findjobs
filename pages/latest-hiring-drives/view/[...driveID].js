@@ -17,6 +17,7 @@ import ReactHtmlParser from "react-html-parser";
 import { BiLinkExternal } from "react-icons/bi";
 import { notifyError, notifyInfo } from "../../../utils/toasters";
 import moment from "moment";
+import Image from "next/image";
 
 const ViewDrive = () => {
   const { currentUser } = useAuth();
@@ -107,10 +108,33 @@ const ViewDrive = () => {
               className="bg-white border rounded-md p-4 md:p-10"
             >
               <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-xl md:text-3xl font-medium text-blue-600">
-                    {drive?.title}
-                  </h1>
+                <div className="flex items-center">
+                  <div className="mr-5">
+                    {drive.company_logo ? (
+                      <>
+                        <Image
+                          src={drive?.company_logo}
+                          alt={drive?.company_name}
+                          width={100}
+                          height={100}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Image
+                          src="/company_fake_logo.webp"
+                          alt={drive?.company_name}
+                          width={100}
+                          height={100}
+                        />
+                      </>
+                    )}
+                  </div>
+                  <div>
+                    <h1 className="text-xl md:text-3xl font-medium text-blue-600">
+                      {drive?.title}
+                    </h1>
+                  </div>
                 </div>
                 <div className="hidden md:block flex-col">
                   <p>
@@ -121,6 +145,18 @@ const ViewDrive = () => {
                     Updated At:{" "}
                     <span className="font-medium">{drive?.updatedAt}</span>
                   </p>
+                  {drive?.posted_by && (
+                    <>
+                      <div className="flex items-center my-2 md:m-0">
+                        <p className="mr-2">Posted by: </p>
+                        <Link href={`/user/${drive?.posted_by}`}>
+                          <a className="text-blue-600 hover:underline hover:font-medium">
+                            {drive?.posted_by}
+                          </a>
+                        </Link>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="mt-5 my-1">
@@ -191,6 +227,18 @@ const ViewDrive = () => {
                   Updated At:{" "}
                   <span className="font-medium">{drive?.updatedAt}</span>
                 </p>
+                {drive?.posted_by && (
+                      <>
+                        <div className="flex items-center my-2 md:m-0">
+                          <p className="mr-2">Posted by: </p>
+                          <Link href={`/user/${drive?.posted_by}`}>
+                            <a className="text-blue-600 hover:underline hover:font-medium">
+                              {drive?.posted_by}
+                            </a>
+                          </Link>
+                        </div>
+                      </>
+                    )}
               </div>
             </div>
           ))}

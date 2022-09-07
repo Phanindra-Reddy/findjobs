@@ -76,6 +76,9 @@ const FindAJob = () => {
       </>
     );
   }
+
+  console.log(allJobs);
+
   return (
     <>
       <Head>
@@ -99,23 +102,48 @@ const FindAJob = () => {
               allJobs?.slice(firstPageIndex, lastPageIndex)?.map((job) => (
                 <div
                   key={job?.id}
-                  className="md:h-40 group cursor-pointer my-3 px-6 md:px-10 pb-4 flex flex-col border-b"
+                  className="md:h-54 group cursor-pointer my-3 px-6 md:px-10 pb-4 flex flex-col border-b"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h2
-                        onClick={() =>
-                          router.push(`find-a-job/view/${job?.id}`)
-                        }
-                        className="text-xl text-blue-600 font-medium group-hover:underline"
-                      >
-                        {job?.role}
-                      </h2>
-                      <p className="font-medium hover:underline">
-                        <Link href={`${job?.company_url}`}>
-                          <a target="_blank">{job?.company_name}</a>
-                        </Link>
-                      </p>
+                      <div className="flex items-center">
+                        <div className="mr-5">
+                          {job.company_logo ? (
+                            <>
+                              <Image
+                                src={job?.company_logo}
+                                alt={job?.company_name}
+                                width={100}
+                                height={100}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <Image
+                                src="/company_fake_logo.webp"
+                                alt={job?.company_name}
+                                width={100}
+                                height={100}
+                              />
+                            </>
+                          )}
+                        </div>
+                        <div>
+                          <h2
+                            onClick={() =>
+                              router.push(`find-a-job/view/${job?.id}`)
+                            }
+                            className="text-xl text-blue-600 font-medium group-hover:underline"
+                          >
+                            {job?.role}
+                          </h2>
+                          <p className="font-medium hover:underline">
+                            <Link href={`${job?.company_url}`}>
+                              <a target="_blank">{job?.company_name}</a>
+                            </Link>
+                          </p>
+                        </div>
+                      </div>
                       <p className="text-gray-500">
                         {job?.location && job?.location} {""} (
                         {job?.job_type && job?.job_type})

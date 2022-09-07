@@ -15,6 +15,7 @@ import Link from "next/link";
 import ReactHtmlParser from "react-html-parser";
 import { BiLinkExternal } from "react-icons/bi";
 import { notifyError, notifyInfo } from "../../../utils/toasters";
+import Image from "next/image";
 
 const ViewJobId = () => {
   const { currentUser } = useAuth();
@@ -114,15 +115,49 @@ const ViewJobId = () => {
               className="bg-white border rounded-md p-4 md:p-10"
             >
               <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-xl md:text-3xl font-medium text-blue-600">
+                <div className="flex items-center">
+                  <div className="mr-5">
+                    {job.company_logo ? (
+                      <>
+                        <Image
+                          src={job?.company_logo}
+                          alt={job?.company_name}
+                          width={100}
+                          height={100}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Image
+                          src="/company_fake_logo.webp"
+                          alt={job?.company_name}
+                          width={100}
+                          height={100}
+                        />
+                      </>
+                    )}
+                  </div>
+                  <div>
+                    <h2
+                      onClick={() => router.push(`find-a-job/view/${job?.id}`)}
+                      className="text-xl text-blue-600 font-medium group-hover:underline"
+                    >
+                      {job?.role}
+                    </h2>
+                    <p className="font-medium hover:underline">
+                      <Link href={`${job?.company_url}`}>
+                        <a target="_blank">{job?.company_name}</a>
+                      </Link>
+                    </p>
+                  </div>
+                  {/* <h1 className="text-xl md:text-3xl font-medium text-blue-600">
                     {job?.role}
                   </h1>
                   <p>
                     <Link href={`${job?.company_url}`}>
                       <a className="hover:underline">{job?.company_name}</a>
                     </Link>
-                  </p>
+                  </p> */}
                 </div>
                 <div className="hidden md:block flex-col">
                   <p>

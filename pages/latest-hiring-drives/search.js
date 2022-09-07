@@ -139,11 +139,43 @@ const DriveSearch = () => {
               allDrives?.slice(firstPageIndex, lastPageIndex)?.map((drive) => (
                 <div
                   key={drive?.id}
-                  className="md:h-40 group cursor-pointer my-3 px-6 md:px-10 pb-4 flex flex-col border-b"
+                  className="md:h-54 group cursor-pointer my-3 px-6 md:px-10 pb-4 flex flex-col border-b"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h2
+                      <div className="flex items-center">
+                        <div className="mr-5">
+                          {drive.company_logo ? (
+                            <>
+                              <Image
+                                src={drive?.company_logo}
+                                alt={drive?.company_name}
+                                width={100}
+                                height={100}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <Image
+                                src="/company_fake_logo.webp"
+                                alt={drive?.company_name}
+                                width={100}
+                                height={100}
+                              />
+                            </>
+                          )}
+                        </div>
+                        <div>
+                          <h2
+                            onClick={() => router.push(`view/${drive?.id}`)}
+                            className="text-xl text-blue-600 font-medium group-hover:underline"
+                          >
+                            {drive?.title}
+                          </h2>
+                          <p className="font-medium">{drive?.company_name}</p>
+                        </div>
+                      </div>
+                      {/* <h2
                         onClick={() =>
                           router.push(`view/${drive?.id}`)
                         }
@@ -151,7 +183,7 @@ const DriveSearch = () => {
                       >
                         {drive?.title}
                       </h2>
-                      <p className="font-medium">{drive?.company_name}</p>
+                      <p className="font-medium">{drive?.company_name}</p> */}
                       <p className="text-gray-500">
                         {drive?.location} {""}
                       </p>
@@ -162,9 +194,7 @@ const DriveSearch = () => {
 
                     <div className="hidden md:block">
                       <button
-                        onClick={() =>
-                          router.push(`view/${drive?.id}`)
-                        }
+                        onClick={() => router.push(`view/${drive?.id}`)}
                         className="hidden group-hover:block"
                       >
                         <BsFillEyeFill className="h-6 w-6 mr-10" />
@@ -202,9 +232,7 @@ const DriveSearch = () => {
                   </p>
                   <div className="block md:hidden">
                     <button
-                      onClick={() =>
-                        router.push(`view/${drive?.id}`)
-                      }
+                      onClick={() => router.push(`view/${drive?.id}`)}
                       className="flex items-center justify-center w-full border border-blue-700 hover:bg-blue-700 hover:text-white p-1 my-2 rounded-md"
                     >
                       <BsFillEyeFill className="h-6 w-6" />

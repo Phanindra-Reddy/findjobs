@@ -16,6 +16,7 @@ import ReactHtmlParser from "react-html-parser";
 import { BiLinkExternal } from "react-icons/bi";
 import { notifyError, notifyInfo } from "../../../utils/toasters";
 import moment from "moment";
+import Image from "next/image";
 
 const ViewDrive = () => {
   const { currentUser } = useAuth();
@@ -116,9 +117,37 @@ const ViewDrive = () => {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-xl md:text-3xl font-medium text-blue-600">
+                  {/* <h1 className="text-xl md:text-3xl font-medium text-blue-600">
                     {drive?.title}
-                  </h1>
+                  </h1> */}
+                  <div className="flex items-center">
+                    <div className="mr-5">
+                      {drive.company_logo ? (
+                        <>
+                          <Image
+                            src={drive?.company_logo}
+                            alt={drive?.company_name}
+                            width={100}
+                            height={100}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Image
+                            src="/company_fake_logo.webp"
+                            alt={drive?.company_name}
+                            width={100}
+                            height={100}
+                          />
+                        </>
+                      )}
+                    </div>
+                    <div>
+                      <h1 className="text-3xl font-medium text-blue-700 hover:underline">
+                        {drive?.title}
+                      </h1>
+                    </div>
+                  </div>
                 </div>
                 <div className="hidden md:block flex-col">
                   <p>
@@ -150,9 +179,7 @@ const ViewDrive = () => {
                 </p>
                 <p className="">
                   Date Posted:{" "}
-                  <span className="font-medium">
-                    {drive?.date_posted}
-                  </span>
+                  <span className="font-medium">{drive?.date_posted}</span>
                   <small className="text-red-600">
                     (Date mentioned on company site.)
                   </small>

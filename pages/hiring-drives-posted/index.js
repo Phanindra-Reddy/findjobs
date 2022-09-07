@@ -103,9 +103,38 @@ const HiringDrivesPosted = () => {
                     <Link href={`hiring-drives-posted/view/${drive?.id}`}>
                       <a>
                         <div className="flex items-center justify-between">
-                          <h1 className="text-2xl font-medium text-blue-700 hover:underline">
+                          {/* <h1 className="text-2xl font-medium text-blue-700 hover:underline">
                             {drive?.title}
-                          </h1>
+                          </h1> */}
+                          <div className="flex items-center">
+                            <div className="mr-5">
+                              {drive.company_logo ? (
+                                <>
+                                  <Image
+                                    src={drive?.company_logo}
+                                    alt={drive?.company_name}
+                                    width={100}
+                                    height={100}
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <Image
+                                    src="/company_fake_logo.webp"
+                                    alt={drive?.company_name}
+                                    width={100}
+                                    height={100}
+                                  />
+                                </>
+                              )}
+                            </div>
+                            <div>
+                              <h1 className="text-2xl font-medium text-blue-700 hover:underline">
+                                {drive?.title}
+                              </h1>
+                              <p>{drive?.company_name}</p>
+                            </div>
+                          </div>
                           <div className="hidden md:flex items-center">
                             <button
                               onClick={() =>
@@ -131,7 +160,7 @@ const HiringDrivesPosted = () => {
                         </div>
                       </a>
                     </Link>
-                    <p>{drive?.date_posted}</p>
+                    <p>Date Posted:{" "}{drive?.date_posted}</p>
                     <div className="flex md:hidden items-center justify-between mt-5">
                       <button
                         onClick={() =>
